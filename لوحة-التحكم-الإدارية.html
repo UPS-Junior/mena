@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة التحكم - Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#3b82f6',secondary:'#64748b'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+<style>
+:where([class^="ri-"])::before { content: "\f3c2"; }
+body {
+font-family: 'Cairo', sans-serif;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+-webkit-appearance: none;
+margin: 0;
+}
+input[type="number"] {
+-moz-appearance: textfield;
+}
+.custom-checkbox {
+position: relative;
+display: inline-block;
+width: 20px;
+height: 20px;
+border: 2px solid #cbd5e1;
+border-radius: 4px;
+cursor: pointer;
+}
+.custom-checkbox.checked {
+background-color: #3b82f6;
+border-color: #3b82f6;
+}
+.custom-checkbox.checked::after {
+content: '';
+position: absolute;
+left: 6px;
+top: 2px;
+width: 5px;
+height: 10px;
+border: solid white;
+border-width: 0 2px 2px 0;
+transform: rotate(45deg);
+}
+.custom-switch {
+position: relative;
+display: inline-block;
+width: 46px;
+height: 24px;
+}
+.custom-switch input {
+opacity: 0;
+width: 0;
+height: 0;
+}
+.slider {
+position: absolute;
+cursor: pointer;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background-color: #e2e8f0;
+transition: .4s;
+border-radius: 24px;
+}
+.slider:before {
+position: absolute;
+content: "";
+height: 18px;
+width: 18px;
+right: 4px;
+bottom: 3px;
+background-color: white;
+transition: .4s;
+border-radius: 50%;
+}
+input:checked + .slider {
+background-color: #3b82f6;
+}
+input:checked + .slider:before {
+transform: translateX(-22px);
+}
+</style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+<div class="flex h-screen">
+<!-- Sidebar -->
+<aside class="w-64 bg-white shadow-md">
+<div class="p-4 flex items-center gap-2">
+<span class="font-['Pacifico'] text-primary text-2xl">logo</span>
+<span class="font-bold text-gray-800">لوحة التحكم</span>
+</div>
+<nav class="mt-6">
+<div class="px-4 py-2 text-xs font-semibold text-gray-500">القائمة الرئيسية</div>
+<a href="#" class="flex items-center px-4 py-3 text-gray-700 bg-gray-100 border-r-4 border-primary">
+<div class="w-6 h-6 flex items-center justify-center mr-2">
+<i class="ri-dashboard-line text-primary"></i>
+</div>
+<span>لوحة التحكم</span>
+</a>
+<a href="https://readdy.ai/home/53b62293-f8aa-49c2-8ff3-1e3a6d8c321e/3528a384-5a31-4a76-aed6-e4600099294d" data-readdy="true" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50">
+<div class="w-6 h-6 flex items-center justify-center mr-2">
+<i class="ri-exchange-funds-line"></i>
+</div>
+<span>المعاملات</span>
+</a>
+<a href="https://readdy.ai/home/53b62293-f8aa-49c2-8ff3-1e3a6d8c321e/e0568e7e-3879-4099-b790-b1fb3d126da0" data-readdy="true" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50">
+<div class="w-6 h-6 flex items-center justify-center mr-2">
+<i class="ri-safe-line"></i>
+</div>
+<span>إدارة الخزنة</span>
+</a>
+<a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50">
+<div class="w-6 h-6 flex items-center justify-center mr-2">
+<i class="ri-user-line"></i>
+</div>
+<span>المندوبين</span>
+</a>
+<a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50">
+<div class="w-6 h-6 flex items-center justify-center mr-2">
+<i class="ri-store-line"></i>
+</div>
+<span>الفروع</span>
+</a>
+<a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50">
+<div class="w-6 h-6 flex items-center justify-center mr-2">
+<i class="ri-settings-line"></i>
+</div>
+<span>الإعدادات</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content -->
+<div class="flex-1 flex flex-col overflow-hidden">
+<!-- Top Navbar -->
+<header class="bg-white shadow-sm">
+<div class="flex items-center justify-between p-4">
+<div class="flex items-center gap-4">
+<button id="menuToggle" class="p-1 rounded-full hover:bg-gray-100">
+<div class="w-8 h-8 flex items-center justify-center">
+<i class="ri-menu-line text-xl"></i>
+</div>
+</button>
+<div class="relative">
+<div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-search-line text-gray-400"></i>
+</div>
+</div>
+<input type="text" class="bg-gray-50 border-none text-gray-900 text-sm rounded-lg block w-64 pr-10 p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none" placeholder="البحث...">
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="relative p-1 rounded-full hover:bg-gray-100">
+<div class="w-8 h-8 flex items-center justify-center">
+<i class="ri-notification-line text-xl"></i>
+</div>
+<span class="absolute top-0 right-0 h-5 w-5 flex items-center justify-center text-xs text-white bg-red-500 rounded-full">3</span>
+</button>
+<div class="flex items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">ع</div>
+<div>
+<p class="text-sm font-medium">عبد الرحمن محمد</p>
+<p class="text-xs text-gray-500">مدير النظام</p>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 overflow-y-auto bg-gray-50 p-6">
+<div class="mb-6">
+<h1 class="text-2xl font-bold text-gray-800">لوحة التحكم</h1>
+<p class="text-gray-600">مرحباً بك، إليك آخر التحديثات</p>
+</div>
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+<div class="bg-white rounded shadow-sm p-6">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-semibold text-gray-700">إجمالي التحصيل اليومي</h3>
+<div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+<div class="w-6 h-6 flex items-center justify-center">
+<i class="ri-money-dollar-circle-line text-primary"></i>
+</div>
+</div>
+</div>
+<p class="text-3xl font-bold text-gray-800">٥,٧٦٠ ر.س</p>
+<div class="flex items-center mt-2">
+<div class="w-4 h-4 flex items-center justify-center">
+<i class="ri-arrow-up-line text-green-500"></i>
+</div>
+<span class="text-sm text-green-500 font-medium">١٢.٥٪</span>
+<span class="text-sm text-gray-500 mr-1">مقارنة بالأمس</span>
+</div>
+</div>
+<div class="bg-white rounded shadow-sm p-6">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-semibold text-gray-700">إجمالي التحصيل الشهري</h3>
+<div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
+<div class="w-6 h-6 flex items-center justify-center">
+<i class="ri-calendar-check-line text-indigo-600"></i>
+</div>
+</div>
+</div>
+<p class="text-3xl font-bold text-gray-800">٨٧,٩٢٠ ر.س</p>
+<div class="flex items-center mt-2">
+<div class="w-4 h-4 flex items-center justify-center">
+<i class="ri-arrow-up-line text-green-500"></i>
+</div>
+<span class="text-sm text-green-500 font-medium">٨.٣٪</span>
+<span class="text-sm text-gray-500 mr-1">مقارنة بالشهر الماضي</span>
+</div>
+</div>
+<div class="bg-white rounded shadow-sm p-6">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-semibold text-gray-700">أعلى مندوب تحصيلاً</h3>
+<div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
+<div class="w-6 h-6 flex items-center justify-center">
+<i class="ri-user-star-line text-amber-600"></i>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 font-bold">م</div>
+<div>
+<p class="text-lg font-bold text-gray-800">محمد عبد العزيز</p>
+<p class="text-sm text-gray-600">٢٤,٥٦٠ ر.س</p>
+</div>
+</div>
+<div class="mt-3 bg-gray-100 h-2 rounded-full">
+<div class="bg-amber-500 h-2 rounded-full" style="width: 78%"></div>
+</div>
+</div>
+</div>
+<!-- Charts Section -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+<div class="bg-white rounded shadow-sm p-6 md:col-span-2">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-lg font-semibold text-gray-700">تحليل التحصيل</h3>
+<div class="flex items-center gap-2">
+<button class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full !rounded-button hover:bg-gray-200 whitespace-nowrap">اليوم</button>
+<button class="px-3 py-1 text-sm bg-primary text-white rounded-full !rounded-button hover:bg-primary/90 whitespace-nowrap">الأسبوع</button>
+<button class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full !rounded-button hover:bg-gray-200 whitespace-nowrap">الشهر</button>
+</div>
+</div>
+<div id="transactionChart" class="w-full h-64"></div>
+</div>
+<div class="bg-white rounded shadow-sm p-6">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-lg font-semibold text-gray-700">طرق الدفع</h3>
+<button class="text-primary text-sm hover:underline whitespace-nowrap">عرض الكل</button>
+</div>
+<div id="paymentMethodChart" class="w-full h-64"></div>
+</div>
+</div>
+<!-- Transactions Table -->
+<div class="bg-white rounded shadow-sm p-6 mb-6">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-lg font-semibold text-gray-700">آخر المعاملات</h3>
+<a href="#" class="text-primary text-sm hover:underline whitespace-nowrap">عرض جميع المعاملات</a>
+</div>
+<!-- Filters -->
+<div class="flex flex-wrap gap-4 mb-6">
+<div class="relative">
+<div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-search-line text-gray-400"></i>
+</div>
+</div>
+<input type="text" class="bg-gray-50 border-none text-gray-900 text-sm rounded-lg block w-64 pr-10 p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none" placeholder="البحث بالاسم...">
+</div>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-arrow-down-s-line text-gray-400"></i>
+</div>
+</div>
+<button id="branchDropdown" class="bg-gray-50 border-none text-gray-900 text-sm rounded-lg block w-48 pl-10 p-2.5 text-right focus:ring-2 focus:ring-primary/20 focus:outline-none whitespace-nowrap">
+جميع الفروع
+</button>
+<div id="branchDropdownMenu" class="hidden absolute z-10 mt-1 w-48 bg-white shadow-lg rounded-lg py-1">
+<a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">جميع الفروع</a>
+<a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">فرع الرياض</a>
+<a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">فرع جدة</a>
+<a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">فرع الدمام</a>
+</div>
+</div>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-arrow-down-s-line text-gray-400"></i>
+</div>
+</div>
+<button id="representativeDropdown" class="bg-gray-50 border-none text-gray-900 text-sm rounded-lg block w-48 pl-10 p-2.5 text-right focus:ring-2 focus:ring-primary/20 focus:outline-none whitespace-nowrap">
+جميع المندوبين
+</button>
+<div id="representativeDropdownMenu" class="hidden absolute z-10 mt-1 w-48 bg-white shadow-lg rounded-lg py-1">
+<a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">جميع المندوبين</a>
+<a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">محمد عبد العزيز</a>
+<a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">أحمد خالد</a>
+<a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">عمر سعيد</a>
+</div>
+</div>
+<div class="relative">
+<input type="date" class="bg-gray-50 border-none text-gray-900 text-sm rounded-lg block w-48 p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none">
+</div>
+<button class="px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 !rounded-button whitespace-nowrap">
+تطبيق الفلتر
+</button>
+</div>
+<!-- Table -->
+<div class="overflow-x-auto">
+<table class="min-w-full divide-y divide-gray-200">
+<thead class="bg-gray-50">
+<tr>
+<th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+اسم العميل
+</th>
+<th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+المبلغ
+</th>
+<th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+طريقة الدفع
+</th>
+<th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+التاريخ
+</th>
+<th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+الفرع
+</th>
+<th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+المندوب
+</th>
+<th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+خيارات
+</th>
+</tr>
+</thead>
+<tbody class="bg-white divide-y divide-gray-200">
+<tr>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="flex items-center">
+<div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs">س</div>
+<div class="mr-3">
+<div class="text-sm font-medium text-gray-900">سعيد محمد الأحمد</div>
+<div class="text-xs text-gray-500">#INV-2025-0142</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-gray-900 font-medium">١,٢٥٠ ر.س</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="flex items-center">
+<div class="w-6 h-6 flex items-center justify-center ml-1">
+<i class="ri-bank-card-line text-indigo-600"></i>
+</div>
+<span class="text-sm text-gray-900">بطاقة ائتمان</span>
+</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-gray-900">٢٦ مايو ٢٠٢٥</div>
+<div class="text-xs text-gray-500">١٠:٣٠ ص</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-gray-900">فرع الرياض</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-gray-900">محمد عبد العزيز</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+<button class="text-primary hover:text-primary/80 whitespace-nowrap">عرض التفاصيل</button>
+</td>
+</tr>
+<tr>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="flex items-center">
+<div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold text-xs">ن</div>
+<div class="mr-3">
+<div class="text-sm font-medium text-gray-900">نورة خالد العتيبي</div>
+<div class="text-xs text-gray-500">#INV-2025-0141</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-gray-900 font-medium">٨٥٠ ر.س</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="flex items-center">
+<div class="w-6 h-6 flex items-center justify-center ml-1">
+<i class="ri-wallet-3-line text-green-600"></i>
+</div>
+<span class="text-sm text-gray-900">محفظة إلكترونية</span>
+</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-gray-900">٢٦ مايو ٢٠٢٥</div>
+<div class="text-xs text-gray-500">٩:٤٥ ص</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-gray-900">فرع جدة</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-gray-900">أحمد خالد</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+<button class="text-primary hover:text-primary/80 whitespace-nowrap">عرض التفاصيل</button>
+</td>
+</tr>
+<tr>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="flex items-center">
+<div class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 font-bold text-xs">ف</div>
+<div class="mr-3">
+<div class="text-sm font-medium text-gray-900">فهد سلطان الدوسري</div>
+<div class="text-xs text-gray-500">#INV-2025-0140</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-gray-900 font-medium">٢,٥٠٠ ر.س</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="flex items-center">
+<div class="w-6 h-6 flex items-center justify-center ml-1">
+<i class="ri-money-dollar-box-line text-amber-600"></i>
+</div>
+<span class="text-sm text-gray-900">نقدي</span>
+</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-gray-900">٢٦ مايو ٢٠٢٥</div>
+<div class="text-xs text-gray-500">٩:١٥ ص</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-gray-900">فرع الدمام</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-gray-900">عمر سعيد</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+<button class="text-primary hover:text-primary/80 whitespace-nowrap">عرض التفاصيل</button>
+</td>
+</tr>
+<tr>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="flex items-center">
+<div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-xs">م</div>
+<div class="mr-3">
+<div class="text-sm font-medium text-gray-900">منى أحمد الشمري</div>
+<div class="text-xs text-gray-500">#INV-2025-0139</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-gray-900 font-medium">١,١٦٠ ر.س</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="flex items-center">
+<div class="w-6 h-6 flex items-center justify-center ml-1">
+<i class="ri-bank-card-line text-indigo-600"></i>
+</div>
+<span class="text-sm text-gray-900">بطاقة ائتمان</span>
+</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-gray-900">٢٥ مايو ٢٠٢٥</div>
+<div class="text-xs text-gray-500">٤:٢٠ م</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-gray-900">فرع الرياض</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-gray-900">محمد عبد العزيز</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+<button class="text-primary hover:text-primary/80 whitespace-nowrap">عرض التفاصيل</button>
+</td>
+</tr>
+<tr>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="flex items-center">
+<div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-xs">ع</div>
+<div class="mr-3">
+<div class="text-sm font-medium text-gray-900">عبد الله محمد القحطاني</div>
+<div class="text-xs text-gray-500">#INV-2025-0138</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-gray-900 font-medium">٣,٢٠٠ ر.س</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="flex items-center">
+<div class="w-6 h-6 flex items-center justify-center ml-1">
+<i class="ri-money-dollar-box-line text-amber-600"></i>
+</div>
+<span class="text-sm text-gray-900">نقدي</span>
+</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-gray-900">٢٥ مايو ٢٠٢٥</div>
+<div class="text-xs text-gray-500">٢:١٠ م</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-gray-900">فرع جدة</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-gray-900">أحمد خالد</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+<button class="text-primary hover:text-primary/80 whitespace-nowrap">عرض التفاصيل</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="flex items-center justify-between mt-6">
+<div class="text-sm text-gray-700">
+عرض <span class="font-medium">١</span> إلى <span class="font-medium">٥</span> من أصل <span class="font-medium">٤٢</span> معاملة
+</div>
+<div class="flex items-center gap-2">
+<button class="px-3 py-1 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed !rounded-button whitespace-nowrap" disabled>
+السابق
+</button>
+<button class="px-3 py-1 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 !rounded-button whitespace-nowrap">
+التالي
+</button>
+</div>
+</div>
+</div>
+<!-- Cashbox Management -->
+<div class="bg-white rounded shadow-sm p-6">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-lg font-semibold text-gray-700">إدارة الخزنة</h3>
+<div class="flex gap-2">
+<button id="addToBoxBtn" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-1 !rounded-button whitespace-nowrap">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-add-line"></i>
+</div>
+<span>إضافة مبلغ</span>
+</button>
+<button id="withdrawFromBoxBtn" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center gap-1 !rounded-button whitespace-nowrap">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-subtract-line"></i>
+</div>
+<span>سحب مبلغ</span>
+</button>
+</div>
+</div>
+<!-- Current Balance -->
+<div class="bg-gradient-to-r from-primary to-blue-700 rounded-lg p-6 mb-6">
+<p class="text-white text-lg mb-2">الرصيد الحالي</p>
+<h2 class="text-white text-4xl font-bold">٣٢,٧٥٠ ر.س</h2>
+<p class="text-blue-100 text-sm mt-2">آخر تحديث: ٢٦ مايو ٢٠٢٥، ١٠:٣٠ ص</p>
+</div>
+<!-- Cashbox History -->
+<div>
+<h4 class="text-md font-semibold text-gray-700 mb-4">سجل عمليات الخزنة</h4>
+<div class="overflow-x-auto">
+<table class="min-w-full divide-y divide-gray-200">
+<thead class="bg-gray-50">
+<tr>
+<th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+نوع العملية
+</th>
+<th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+المبلغ
+</th>
+<th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+التاريخ
+</th>
+<th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+الملاحظات
+</th>
+<th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+المستخدم
+</th>
+</tr>
+</thead>
+<tbody class="bg-white divide-y divide-gray-200">
+<tr>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+إضافة
+</span>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-green-600 font-medium">+ ٥,٠٠٠ ر.س</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-gray-900">٢٦ مايو ٢٠٢٥</div>
+<div class="text-xs text-gray-500">٨:٣٠ ص</div>
+</td>
+<td class="px-6 py-4">
+<div class="text-sm text-gray-900">إيداع نقدي في بداية اليوم</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-gray-900">عبد الرحمن محمد</div>
+</td>
+</tr>
+<tr>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+سحب
+</span>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-red-600 font-medium">- ١,٢٠٠ ر.س</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-gray-900">٢٥ مايو ٢٠٢٥</div>
+<div class="text-xs text-gray-500">٤:٤٥ م</div>
+</td>
+<td class="px-6 py-4">
+<div class="text-sm text-gray-900">مصاريف تشغيلية - صيانة مكيفات</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-gray-900">عبد الرحمن محمد</div>
+</td>
+</tr>
+<tr>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+إضافة
+</span>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-green-600 font-medium">+ ٣,٢٠٠ ر.س</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-gray-900">٢٥ مايو ٢٠٢٥</div>
+<div class="text-xs text-gray-500">٢:١٠ م</div>
+</td>
+<td class="px-6 py-4">
+<div class="text-sm text-gray-900">إيداع تحصيل - عبد الله القحطاني</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-gray-900">أحمد خالد</div>
+</td>
+</tr>
+<tr>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+سحب
+</span>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-red-600 font-medium">- ٨٥٠ ر.س</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-gray-900">٢٥ مايو ٢٠٢٥</div>
+<div class="text-xs text-gray-500">١١:٢٠ ص</div>
+</td>
+<td class="px-6 py-4">
+<div class="text-sm text-gray-900">مصاريف قرطاسية ومستلزمات مكتبية</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-gray-900">عبد الرحمن محمد</div>
+</td>
+</tr>
+<tr>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+إضافة
+</span>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-green-600 font-medium">+ ١٠,٠٠٠ ر.س</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-gray-900">٢٥ مايو ٢٠٢٥</div>
+<div class="text-xs text-gray-500">٨:٠٠ ص</div>
+</td>
+<td class="px-6 py-4">
+<div class="text-sm text-gray-900">إيداع نقدي في بداية اليوم</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="text-sm text-gray-900">عبد الرحمن محمد</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="flex items-center justify-between mt-6">
+<div class="text-sm text-gray-700">
+عرض <span class="font-medium">١</span> إلى <span class="font-medium">٥</span> من أصل <span class="font-medium">٢٨</span> عملية
+</div>
+<div class="flex items-center gap-2">
+<button class="px-3 py-1 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed !rounded-button whitespace-nowrap" disabled>
+السابق
+</button>
+<button class="px-3 py-1 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 !rounded-button whitespace-nowrap">
+التالي
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+<!-- Add to Cashbox Modal -->
+<div id="addToBoxModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+<div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-semibold text-gray-800">إضافة مبلغ إلى الخزنة</h3>
+<button id="closeAddModal" class="text-gray-500 hover:text-gray-700">
+<div class="w-6 h-6 flex items-center justify-center">
+<i class="ri-close-line text-xl"></i>
+</div>
+</button>
+</div>
+<form>
+<div class="mb-4">
+<label for="addAmount" class="block text-sm font-medium text-gray-700 mb-1">المبلغ</label>
+<div class="relative">
+<input type="number" id="addAmount" class="bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg block w-full p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none" placeholder="أدخل المبلغ" required>
+<div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+<span class="text-gray-500">ر.س</span>
+</div>
+</div>
+</div>
+<div class="mb-6">
+<label for="addNotes" class="block text-sm font-medium text-gray-700 mb-1">ملاحظات</label>
+<textarea id="addNotes" rows="3" class="bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg block w-full p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none" placeholder="أدخل ملاحظات حول العملية"></textarea>
+</div>
+<div class="flex justify-end gap-2">
+<button type="button" id="cancelAddBtn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 !rounded-button whitespace-nowrap">إلغاء</button>
+<button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 !rounded-button whitespace-nowrap">تأكيد الإضافة</button>
+</div>
+</form>
+</div>
+</div>
+<!-- Withdraw from Cashbox Modal -->
+<div id="withdrawFromBoxModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+<div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-semibold text-gray-800">سحب مبلغ من الخزنة</h3>
+<button id="closeWithdrawModal" class="text-gray-500 hover:text-gray-700">
+<div class="w-6 h-6 flex items-center justify-center">
+<i class="ri-close-line text-xl"></i>
+</div>
+</button>
+</div>
+<form>
+<div class="mb-4">
+<label for="withdrawAmount" class="block text-sm font-medium text-gray-700 mb-1">المبلغ</label>
+<div class="relative">
+<input type="number" id="withdrawAmount" class="bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg block w-full p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none" placeholder="أدخل المبلغ" required>
+<div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+<span class="text-gray-500">ر.س</span>
+</div>
+</div>
+</div>
+<div class="mb-6">
+<label for="withdrawNotes" class="block text-sm font-medium text-gray-700 mb-1">ملاحظات</label>
+<textarea id="withdrawNotes" rows="3" class="bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg block w-full p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none" placeholder="أدخل ملاحظات حول العملية"></textarea>
+</div>
+<div class="flex justify-end gap-2">
+<button type="button" id="cancelWithdrawBtn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 !rounded-button whitespace-nowrap">إلغاء</button>
+<button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 !rounded-button whitespace-nowrap">تأكيد السحب</button>
+</div>
+</form>
+</div>
+</div>
+<script id="chartInitScript">
+document.addEventListener('DOMContentLoaded', function() {
+// Transaction Chart
+const transactionChart = echarts.init(document.getElementById('transactionChart'));
+const transactionOption = {
+animation: false,
+tooltip: {
+trigger: 'axis',
+backgroundColor: 'rgba(255, 255, 255, 0.9)',
+borderColor: '#e2e8f0',
+textStyle: {
+color: '#1f2937'
+}
+},
+grid: {
+top: 10,
+right: 10,
+bottom: 20,
+left: 10,
+containLabel: true
+},
+xAxis: {
+type: 'category',
+data: ['السبت', 'الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'],
+axisLine: {
+lineStyle: {
+color: '#e2e8f0'
+}
+},
+axisLabel: {
+color: '#1f2937'
+}
+},
+yAxis: {
+type: 'value',
+axisLine: {
+show: false
+},
+axisLabel: {
+color: '#1f2937'
+},
+splitLine: {
+lineStyle: {
+color: '#e2e8f0'
+}
+}
+},
+series: [
+{
+name: 'نقدي',
+type: 'line',
+smooth: true,
+symbol: 'none',
+data: [4200, 3800, 5100, 4600, 5800, 6200, 5760],
+lineStyle: {
+color: 'rgba(87, 181, 231, 1)'
+},
+areaStyle: {
+color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+{ offset: 0, color: 'rgba(87, 181, 231, 0.3)' },
+{ offset: 1, color: 'rgba(87, 181, 231, 0.1)' }
+])
+}
+},
+{
+name: 'محفظة إلكترونية',
+type: 'line',
+smooth: true,
+symbol: 'none',
+data: [1800, 2200, 2500, 3100, 3400, 3800, 4200],
+lineStyle: {
+color: 'rgba(141, 211, 199, 1)'
+},
+areaStyle: {
+color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+{ offset: 0, color: 'rgba(141, 211, 199, 0.3)' },
+{ offset: 1, color: 'rgba(141, 211, 199, 0.1)' }
+])
+}
+}
+]
+};
+transactionChart.setOption(transactionOption);
+// Payment Method Chart
+const paymentMethodChart = echarts.init(document.getElementById('paymentMethodChart'));
+const paymentMethodOption = {
+animation: false,
+tooltip: {
+trigger: 'item',
+backgroundColor: 'rgba(255, 255, 255, 0.9)',
+borderColor: '#e2e8f0',
+textStyle: {
+color: '#1f2937'
+}
+},
+legend: {
+orient: 'vertical',
+right: 10,
+top: 'center',
+textStyle: {
+color: '#1f2937'
+}
+},
+series: [
+{
+name: 'طرق الدفع',
+type: 'pie',
+radius: ['40%', '70%'],
+center: ['40%', '50%'],
+avoidLabelOverlap: false,
+itemStyle: {
+borderRadius: 8,
+borderColor: '#fff',
+borderWidth: 2
+},
+label: {
+show: false
+},
+emphasis: {
+label: {
+show: false
+}
+},
+labelLine: {
+show: false
+},
+data: [
+{ value: 45, name: 'نقدي', itemStyle: { color: 'rgba(87, 181, 231, 1)' } },
+{ value: 30, name: 'بطاقة ائتمان', itemStyle: { color: 'rgba(141, 211, 199, 1)' } },
+{ value: 25, name: 'محفظة إلكترونية', itemStyle: { color: 'rgba(251, 191, 114, 1)' } }
+]
+}
+]
+};
+paymentMethodChart.setOption(paymentMethodOption);
+// Handle window resize
+window.addEventListener('resize', function() {
+transactionChart.resize();
+paymentMethodChart.resize();
+});
+});
+</script>
+<script id="dropdownsScript">
+document.addEventListener('DOMContentLoaded', function() {
+// Branch Dropdown
+const branchDropdown = document.getElementById('branchDropdown');
+const branchDropdownMenu = document.getElementById('branchDropdownMenu');
+branchDropdown.addEventListener('click', function() {
+branchDropdownMenu.classList.toggle('hidden');
+});
+document.addEventListener('click', function(e) {
+if (!branchDropdown.contains(e.target) && !branchDropdownMenu.contains(e.target)) {
+branchDropdownMenu.classList.add('hidden');
+}
+});
+// Representative Dropdown
+const representativeDropdown = document.getElementById('representativeDropdown');
+const representativeDropdownMenu = document.getElementById('representativeDropdownMenu');
+representativeDropdown.addEventListener('click', function() {
+representativeDropdownMenu.classList.toggle('hidden');
+});
+document.addEventListener('click', function(e) {
+if (!representativeDropdown.contains(e.target) && !representativeDropdownMenu.contains(e.target)) {
+representativeDropdownMenu.classList.add('hidden');
+}
+});
+// Branch dropdown items
+const branchItems = branchDropdownMenu.querySelectorAll('a');
+branchItems.forEach(item => {
+item.addEventListener('click', function(e) {
+e.preventDefault();
+branchDropdown.textContent = item.textContent;
+branchDropdownMenu.classList.add('hidden');
+});
+});
+// Representative dropdown items
+const representativeItems = representativeDropdownMenu.querySelectorAll('a');
+representativeItems.forEach(item => {
+item.addEventListener('click', function(e) {
+e.preventDefault();
+representativeDropdown.textContent = item.textContent;
+representativeDropdownMenu.classList.add('hidden');
+});
+});
+});
+</script>
+<script id="modalsScript">
+document.addEventListener('DOMContentLoaded', function() {
+// Add to Cashbox Modal
+const addToBoxBtn = document.getElementById('addToBoxBtn');
+const addToBoxModal = document.getElementById('addToBoxModal');
+const closeAddModal = document.getElementById('closeAddModal');
+const cancelAddBtn = document.getElementById('cancelAddBtn');
+addToBoxBtn.addEventListener('click', function() {
+addToBoxModal.classList.remove('hidden');
+});
+closeAddModal.addEventListener('click', function() {
+addToBoxModal.classList.add('hidden');
+});
+cancelAddBtn.addEventListener('click', function() {
+addToBoxModal.classList.add('hidden');
+});
+// Withdraw from Cashbox Modal
+const withdrawFromBoxBtn = document.getElementById('withdrawFromBoxBtn');
+const withdrawFromBoxModal = document.getElementById('withdrawFromBoxModal');
+const closeWithdrawModal = document.getElementById('closeWithdrawModal');
+const cancelWithdrawBtn = document.getElementById('cancelWithdrawBtn');
+withdrawFromBoxBtn.addEventListener('click', function() {
+withdrawFromBoxModal.classList.remove('hidden');
+});
+closeWithdrawModal.addEventListener('click', function() {
+withdrawFromBoxModal.classList.add('hidden');
+});
+cancelWithdrawBtn.addEventListener('click', function() {
+withdrawFromBoxModal.classList.add('hidden');
+});
+// Close modals when clicking outside
+window.addEventListener('click', function(e) {
+if (e.target === addToBoxModal) {
+addToBoxModal.classList.add('hidden');
+}
+if (e.target === withdrawFromBoxModal) {
+withdrawFromBoxModal.classList.add('hidden');
+}
+});
+});
+</script>
+<script id="sidebarToggleScript">
+document.addEventListener('DOMContentLoaded', function() {
+const menuToggle = document.getElementById('menuToggle');
+const sidebar = document.querySelector('aside');
+menuToggle.addEventListener('click', function() {
+sidebar.classList.toggle('hidden');
+});
+});
+</script>
+</body>
+</html>
