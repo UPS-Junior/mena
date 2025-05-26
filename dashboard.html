@@ -1,0 +1,2321 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة التحكم - Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#3b82f6',secondary:'#64748b'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+<style>
+:where([class^="ri-"])::before { content: "\f3c2"; }
+body {
+font-family: 'Cairo', sans-serif;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+-webkit-appearance: none;
+margin: 0;
+}
+input[type="number"] {
+-moz-appearance: textfield;
+}
+.custom-checkbox {
+position: relative;
+display: inline-block;
+width: 20px;
+height: 20px;
+border: 2px solid #cbd5e1;
+border-radius: 4px;
+cursor: pointer;
+}
+.custom-checkbox.checked {
+background-color: #3b82f6;
+border-color: #3b82f6;
+}
+.custom-checkbox.checked::after {
+content: '';
+position: absolute;
+left: 6px;
+top: 2px;
+width: 5px;
+height: 10px;
+border: solid white;
+border-width: 0 2px 2px 0;
+transform: rotate(45deg);
+}
+.custom-switch {
+position: relative;
+display: inline-block;
+width: 46px;
+height: 24px;
+}
+.custom-switch input {
+opacity: 0;
+width: 0;
+height: 0;
+}
+.slider {
+position: absolute;
+cursor: pointer;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background-color: #e2e8f0;
+transition: .4s;
+border-radius: 24px;
+}
+.slider:before {
+position: absolute;
+content: "";
+height: 18px;
+width: 18px;
+right: 4px;
+bottom: 3px;
+background-color: white;
+transition: .4s;
+border-radius: 50%;
+}
+input:checked + .slider {
+background-color: #3b82f6;
+}
+input:checked + .slider:before {
+transform: translateX(-22px);
+}
+.date-range-picker {
+            position: relative;
+        }
+        .date-range-picker .calendar {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            z-index: 10;
+            width: 300px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .date-range-picker .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .date-range-picker .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            padding: 8px;
+        }
+        .date-range-picker .calendar-day {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 32px;
+            font-size: 12px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .date-range-picker .calendar-day:hover {
+            background-color: #f3f4f6;
+        }
+        .date-range-picker .calendar-day.selected {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .date-range-picker .calendar-day.in-range {
+            background-color: #dbeafe;
+        }
+        .date-range-picker .calendar-day.disabled {
+            color: #d1d5db;
+            cursor: not-allowed;
+        }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .status-badge.completed {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .status-badge.pending {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        .status-badge.cancelled {
+            background-color: #fee2e2;
+            color: #b91c1c;
+        }
+        .status-badge.processing {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+</style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+<div class="flex h-screen">
+<!-- Sidebar -->
+<aside class="w-64 bg-white shadow-md">
+<div class="p-4 flex items-center gap-2">
+<span class="font-['Pacifico'] text-primary text-2xl">logo</span>
+<span class="font-bold text-gray-800">لوحة التحكم</span>
+</div>
+<nav class="mt-6">
+<div class="px-4 py-2 text-xs font-semibold text-gray-500">القائمة الرئيسية</div>
+<a href="javascript:void(0);" id="nav-dashboard" class="flex items-center px-4 py-3 text-gray-700 bg-gray-100 border-r-4 border-primary">
+<div class="w-6 h-6 flex items-center justify-center mr-2">
+<i class="ri-dashboard-line text-primary"></i>
+</div>
+<span>لوحة التحكم</span>
+</a>
+<a href="javascript:void(0);" id="nav-transactions" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50">
+<div class="w-6 h-6 flex items-center justify-center mr-2">
+<i class="ri-exchange-funds-line"></i>
+</div>
+<span>المعاملات</span>
+</a>
+<a href="javascript:void(0);" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50">
+<div class="w-6 h-6 flex items-center justify-center mr-2">
+<i class="ri-safe-line"></i>
+</div>
+<span>إدارة الخزنة</span>
+</a>
+<a href="#" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50">
+<div class="w-6 h-6 flex items-center justify-center mr-2">
+<i class="ri-user-line"></i>
+</div>
+<span>المندوبين</span>
+</a>
+<a href="javascript:void(0);" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50">
+<div class="w-6 h-6 flex items-center justify-center mr-2">
+<i class="ri-store-line"></i>
+</div>
+<span>الفروع</span>
+</a>
+<a href="javascript:void(0);" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50">
+<div class="w-6 h-6 flex items-center justify-center mr-2">
+<i class="ri-settings-line"></i>
+</div>
+<span>الإعدادات</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content -->
+<div class="flex-1 flex flex-col overflow-hidden">
+<!-- Top Navbar -->
+<header class="bg-white shadow-sm">
+<div class="flex items-center justify-between p-4">
+<div class="flex items-center gap-4">
+<button id="menuToggle" class="p-1 rounded-full hover:bg-gray-100">
+<div class="w-8 h-8 flex items-center justify-center">
+<i class="ri-menu-line text-xl"></i>
+</div>
+</button>
+<div class="relative">
+<div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+<div class="w-5 h-5 flex items-center justify-center">
+<i class="ri-search-line text-gray-400"></i>
+</div>
+</div>
+<input type="text" class="bg-gray-50 border-none text-gray-900 text-sm rounded-lg block w-64 pr-10 p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none" placeholder="البحث...">
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="relative p-1 rounded-full hover:bg-gray-100">
+<div class="w-8 h-8 flex items-center justify-center">
+<i class="ri-notification-line text-xl"></i>
+</div>
+<span class="absolute top-0 right-0 h-5 w-5 flex items-center justify-center text-xs text-white bg-red-500 rounded-full">3</span>
+</button>
+<div class="flex items-center gap-2">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">ع</div>
+<div>
+<p class="text-sm font-medium">عبد الرحمن محمد</p>
+<p class="text-xs text-gray-500">مدير النظام</p>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 overflow-y-auto bg-gray-50 p-6" id="main-content-area">
+    <div id="admin-dashboard-content">
+        <div class="mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">لوحة التحكم</h1>
+        <p class="text-gray-600">مرحباً بك، إليك آخر التحديثات</p>
+        </div>
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div class="bg-white rounded shadow-sm p-6">
+        <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-700">إجمالي التحصيل اليومي</h3>
+        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+        <div class="w-6 h-6 flex items-center justify-center">
+        <i class="ri-money-dollar-circle-line text-primary"></i>
+        </div>
+        </div>
+        </div>
+        <p class="text-3xl font-bold text-gray-800">٥,٧٦٠ ر.س</p>
+        <div class="flex items-center mt-2">
+        <div class="w-4 h-4 flex items-center justify-center">
+        <i class="ri-arrow-up-line text-green-500"></i>
+        </div>
+        <span class="text-sm text-green-500 font-medium">١٢.٥٪</span>
+        <span class="text-sm text-gray-500 mr-1">مقارنة بالأمس</span>
+        </div>
+        </div>
+        <div class="bg-white rounded shadow-sm p-6">
+        <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-700">إجمالي التحصيل الشهري</h3>
+        <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
+        <div class="w-6 h-6 flex items-center justify-center">
+        <i class="ri-calendar-check-line text-indigo-600"></i>
+        </div>
+        </div>
+        </div>
+        <p class="text-3xl font-bold text-gray-800">٨٧,٩٢٠ ر.س</p>
+        <div class="flex items-center mt-2">
+        <div class="w-4 h-4 flex items-center justify-center">
+        <i class="ri-arrow-up-line text-green-500"></i>
+        </div>
+        <span class="text-sm text-green-500 font-medium">٨.٣٪</span>
+        <span class="text-sm text-gray-500 mr-1">مقارنة بالشهر الماضي</span>
+        </div>
+        </div>
+        <div class="bg-white rounded shadow-sm p-6">
+        <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-700">أعلى مندوب تحصيلاً</h3>
+        <div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
+        <div class="w-6 h-6 flex items-center justify-center">
+        <i class="ri-user-star-line text-amber-600"></i>
+        </div>
+        </div>
+        </div>
+        <div class="flex items-center gap-3">
+        <div class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 font-bold">م</div>
+        <div>
+        <p class="text-lg font-bold text-gray-800">محمد عبد العزيز</p>
+        <p class="text-sm text-gray-600">٢٤,٥٦٠ ر.س</p>
+        </div>
+        </div>
+        <div class="mt-3 bg-gray-100 h-2 rounded-full">
+        <div class="bg-amber-500 h-2 rounded-full" style="width: 78%"></div>
+        </div>
+        </div>
+        </div>
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div class="bg-white rounded shadow-sm p-6 md:col-span-2">
+        <div class="flex items-center justify-between mb-6">
+        <h3 class="text-lg font-semibold text-gray-700">تحليل التحصيل</h3>
+        <div class="flex items-center gap-2">
+        <button class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full !rounded-button hover:bg-gray-200 whitespace-nowrap">اليوم</button>
+        <button class="px-3 py-1 text-sm bg-primary text-white rounded-full !rounded-button hover:bg-primary/90 whitespace-nowrap">الأسبوع</button>
+        <button class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full !rounded-button hover:bg-gray-200 whitespace-nowrap">الشهر</button>
+        </div>
+        </div>
+        <div id="adminTransactionChart" class="w-full h-64"></div>
+        </div>
+        <div class="bg-white rounded shadow-sm p-6">
+        <div class="flex items-center justify-between mb-6">
+        <h3 class="text-lg font-semibold text-gray-700">طرق الدفع</h3>
+        <button class="text-primary text-sm hover:underline whitespace-nowrap">عرض الكل</button>
+        </div>
+        <div id="adminPaymentMethodChart" class="w-full h-64"></div>
+        </div>
+        </div>
+        <!-- Transactions Table -->
+        <div class="bg-white rounded shadow-sm p-6 mb-6">
+        <div class="flex items-center justify-between mb-6">
+        <h3 class="text-lg font-semibold text-gray-700">آخر المعاملات</h3>
+        <a href="#" class="text-primary text-sm hover:underline whitespace-nowrap">عرض جميع المعاملات</a>
+        </div>
+        <!-- Filters -->
+        <div class="flex flex-wrap gap-4 mb-6">
+        <div class="relative">
+        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+        <div class="w-5 h-5 flex items-center justify-center">
+        <i class="ri-search-line text-gray-400"></i>
+        </div>
+        </div>
+        <input type="text" class="bg-gray-50 border-none text-gray-900 text-sm rounded-lg block w-64 pr-10 p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none" placeholder="البحث بالاسم...">
+        </div>
+        <div class="relative">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+        <div class="w-5 h-5 flex items-center justify-center">
+        <i class="ri-arrow-down-s-line text-gray-400"></i>
+        </div>
+        </div>
+        <button id="branchDropdown" class="bg-gray-50 border-none text-gray-900 text-sm rounded-lg block w-48 pl-10 p-2.5 text-right focus:ring-2 focus:ring-primary/20 focus:outline-none whitespace-nowrap">
+        جميع الفروع
+        </button>
+        <div id="branchDropdownMenu" class="hidden absolute z-10 mt-1 w-48 bg-white shadow-lg rounded-lg py-1">
+        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">جميع الفروع</a>
+        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">فرع الرياض</a>
+        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">فرع جدة</a>
+        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">فرع الدمام</a>
+        </div>
+        </div>
+        <div class="relative">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+        <div class="w-5 h-5 flex items-center justify-center">
+        <i class="ri-arrow-down-s-line text-gray-400"></i>
+        </div>
+        </div>
+        <button id="representativeDropdown" class="bg-gray-50 border-none text-gray-900 text-sm rounded-lg block w-48 pl-10 p-2.5 text-right focus:ring-2 focus:ring-primary/20 focus:outline-none whitespace-nowrap">
+        جميع المندوبين
+        </button>
+        <div id="representativeDropdownMenu" class="hidden absolute z-10 mt-1 w-48 bg-white shadow-lg rounded-lg py-1">
+        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">جميع المندوبين</a>
+        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">محمد عبد العزيز</a>
+        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">أحمد خالد</a>
+        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">عمر سعيد</a>
+        </div>
+        </div>
+        <div class="relative">
+        <input type="date" class="bg-gray-50 border-none text-gray-900 text-sm rounded-lg block w-48 p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none">
+        </div>
+        <button class="px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 !rounded-button whitespace-nowrap">
+        تطبيق الفلتر
+        </button>
+        </div>
+        <!-- Table -->
+        <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+        <tr>
+        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+        اسم العميل
+        </th>
+        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+        المبلغ
+        </th>
+        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+        طريقة الدفع
+        </th>
+        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+        التاريخ
+        </th>
+        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+        الفرع
+        </th>
+        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+        المندوب
+        </th>
+        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+        خيارات
+        </th>
+        </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+        <tr>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="flex items-center">
+        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs">س</div>
+        <div class="mr-3">
+        <div class="text-sm font-medium text-gray-900">سعيد محمد الأحمد</div>
+        <div class="text-xs text-gray-500">#INV-2025-0142</div>
+        </div>
+        </div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900 font-medium">١,٢٥٠ ر.س</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="flex items-center">
+        <div class="w-6 h-6 flex items-center justify-center ml-1">
+        <i class="ri-bank-card-line text-indigo-600"></i>
+        </div>
+        <span class="text-sm text-gray-900">بطاقة ائتمان</span>
+        </div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900">٢٦ مايو ٢٠٢٥</div>
+        <div class="text-xs text-gray-500">١٠:٣٠ ص</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900">فرع الرياض</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900">محمد عبد العزيز</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+        <button class="text-primary hover:text-primary/80 whitespace-nowrap admin-view-details-btn" data-id="ADMN-001">عرض التفاصيل</button>
+        </td>
+        </tr>
+        <tr>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="flex items-center">
+        <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold text-xs">ن</div>
+        <div class="mr-3">
+        <div class="text-sm font-medium text-gray-900">نورة خالد العتيبي</div>
+        <div class="text-xs text-gray-500">#INV-2025-0141</div>
+        </div>
+        </div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900 font-medium">٨٥٠ ر.س</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="flex items-center">
+        <div class="w-6 h-6 flex items-center justify-center ml-1">
+        <i class="ri-wallet-3-line text-green-600"></i>
+        </div>
+        <span class="text-sm text-gray-900">محفظة إلكترونية</span>
+        </div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900">٢٦ مايو ٢٠٢٥</div>
+        <div class="text-xs text-gray-500">٩:٤٥ ص</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900">فرع جدة</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900">أحمد خالد</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+        <button class="text-primary hover:text-primary/80 whitespace-nowrap admin-view-details-btn" data-id="ADMN-002">عرض التفاصيل</button>
+        </td>
+        </tr>
+        <tr>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="flex items-center">
+        <div class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 font-bold text-xs">ف</div>
+        <div class="mr-3">
+        <div class="text-sm font-medium text-gray-900">فهد سلطان الدوسري</div>
+        <div class="text-xs text-gray-500">#INV-2025-0140</div>
+        </div>
+        </div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900 font-medium">٢,٥٠٠ ر.س</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="flex items-center">
+        <div class="w-6 h-6 flex items-center justify-center ml-1">
+        <i class="ri-money-dollar-box-line text-amber-600"></i>
+        </div>
+        <span class="text-sm text-gray-900">نقدي</span>
+        </div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900">٢٦ مايو ٢٠٢٥</div>
+        <div class="text-xs text-gray-500">٩:١٥ ص</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900">فرع الدمام</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900">عمر سعيد</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+        <button class="text-primary hover:text-primary/80 whitespace-nowrap admin-view-details-btn" data-id="ADMN-003">عرض التفاصيل</button>
+        </td>
+        </tr>
+        <tr>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="flex items-center">
+        <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-xs">م</div>
+        <div class="mr-3">
+        <div class="text-sm font-medium text-gray-900">منى أحمد الشمري</div>
+        <div class="text-xs text-gray-500">#INV-2025-0139</div>
+        </div>
+        </div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900 font-medium">١,١٦٠ ر.س</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="flex items-center">
+        <div class="w-6 h-6 flex items-center justify-center ml-1">
+        <i class="ri-bank-card-line text-indigo-600"></i>
+        </div>
+        <span class="text-sm text-gray-900">بطاقة ائتمان</span>
+        </div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900">٢٥ مايو ٢٠٢٥</div>
+        <div class="text-xs text-gray-500">٤:٢٠ م</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900">فرع الرياض</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900">محمد عبد العزيز</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+        <button class="text-primary hover:text-primary/80 whitespace-nowrap admin-view-details-btn" data-id="ADMN-004">عرض التفاصيل</button>
+        </td>
+        </tr>
+        <tr>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="flex items-center">
+        <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold text-xs">ع</div>
+        <div class="mr-3">
+        <div class="text-sm font-medium text-gray-900">عبد الله محمد القحطاني</div>
+        <div class="text-xs text-gray-500">#INV-2025-0138</div>
+        </div>
+        </div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900 font-medium">٣,٢٠٠ ر.س</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="flex items-center">
+        <div class="w-6 h-6 flex items-center justify-center ml-1">
+        <i class="ri-money-dollar-box-line text-amber-600"></i>
+        </div>
+        <span class="text-sm text-gray-900">نقدي</span>
+        </div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900">٢٥ مايو ٢٠٢٥</div>
+        <div class="text-xs text-gray-500">٢:١٠ م</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900">فرع جدة</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900">أحمد خالد</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+        <button class="text-primary hover:text-primary/80 whitespace-nowrap admin-view-details-btn" data-id="ADMN-005">عرض التفاصيل</button>
+        </td>
+        </tr>
+        </tbody>
+        </table>
+        </div>
+        <!-- Pagination -->
+        <div class="flex items-center justify-between mt-6">
+        <div class="text-sm text-gray-700">
+        عرض <span class="font-medium">١</span> إلى <span class="font-medium">٥</span> من أصل <span class="font-medium">٤٢</span> معاملة
+        </div>
+        <div class="flex items-center gap-2">
+        <button class="px-3 py-1 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed !rounded-button whitespace-nowrap" disabled>
+        السابق
+        </button>
+        <button class="px-3 py-1 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 !rounded-button whitespace-nowrap">
+        التالي
+        </button>
+        </div>
+        </div>
+        </div>
+        <!-- Cashbox Management -->
+        <div class="bg-white rounded shadow-sm p-6">
+        <div class="flex items-center justify-between mb-6">
+        <h3 class="text-lg font-semibold text-gray-700">إدارة الخزنة</h3>
+        <div class="flex gap-2">
+        <button id="addToBoxBtn" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-1 !rounded-button whitespace-nowrap">
+        <div class="w-5 h-5 flex items-center justify-center">
+        <i class="ri-add-line"></i>
+        </div>
+        <span>إضافة مبلغ</span>
+        </button>
+        <button id="withdrawFromBoxBtn" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center gap-1 !rounded-button whitespace-nowrap">
+        <div class="w-5 h-5 flex items-center justify-center">
+        <i class="ri-subtract-line"></i>
+        </div>
+        <span>سحب مبلغ</span>
+        </button>
+        </div>
+        </div>
+        <!-- Current Balance -->
+        <div class="bg-gradient-to-r from-primary to-blue-700 rounded-lg p-6 mb-6">
+        <p class="text-white text-lg mb-2">الرصيد الحالي</p>
+        <h2 class="text-white text-4xl font-bold">٣٢,٧٥٠ ر.س</h2>
+        <p class="text-blue-100 text-sm mt-2">آخر تحديث: ٢٦ مايو ٢٠٢٥، ١٠:٣٠ ص</p>
+        </div>
+        <!-- Cashbox History -->
+        <div>
+        <h4 class="text-md font-semibold text-gray-700 mb-4">سجل عمليات الخزنة</h4>
+        <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+        <tr>
+        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+        نوع العملية
+        </th>
+        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+        المبلغ
+        </th>
+        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+        التاريخ
+        </th>
+        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+        الملاحظات
+        </th>
+        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+        المستخدم
+        </th>
+        </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+        <tr>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+        إضافة
+        </span>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-green-600 font-medium">+ ٥,٠٠٠ ر.س</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900">٢٦ مايو ٢٠٢٥</div>
+        <div class="text-xs text-gray-500">٨:٣٠ ص</div>
+        </td>
+        <td class="px-6 py-4">
+        <div class="text-sm text-gray-900">إيداع نقدي في بداية اليوم</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900">عبد الرحمن محمد</div>
+        </td>
+        </tr>
+        <tr>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+        سحب
+        </span>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-red-600 font-medium">- ١,٢٠٠ ر.س</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900">٢٥ مايو ٢٠٢٥</div>
+        <div class="text-xs text-gray-500">٤:٤٥ م</div>
+        </td>
+        <td class="px-6 py-4">
+        <div class="text-sm text-gray-900">مصاريف تشغيلية - صيانة مكيفات</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900">عبد الرحمن محمد</div>
+        </td>
+        </tr>
+        <tr>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+        إضافة
+        </span>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-green-600 font-medium">+ ٣,٢٠٠ ر.س</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900">٢٥ مايو ٢٠٢٥</div>
+        <div class="text-xs text-gray-500">٢:١٠ م</div>
+        </td>
+        <td class="px-6 py-4">
+        <div class="text-sm text-gray-900">إيداع تحصيل - عبد الله القحطاني</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900">أحمد خالد</div>
+        </td>
+        </tr>
+        <tr>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+        سحب
+        </span>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-red-600 font-medium">- ٨٥٠ ر.س</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900">٢٥ مايو ٢٠٢٥</div>
+        <div class="text-xs text-gray-500">١١:٢٠ ص</div>
+        </td>
+        <td class="px-6 py-4">
+        <div class="text-sm text-gray-900">مصاريف قرطاسية ومستلزمات مكتبية</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900">عبد الرحمن محمد</div>
+        </td>
+        </tr>
+        <tr>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+        إضافة
+        </span>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-green-600 font-medium">+ ١٠,٠٠٠ ر.س</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900">٢٥ مايو ٢٠٢٥</div>
+        <div class="text-xs text-gray-500">٨:٠٠ ص</div>
+        </td>
+        <td class="px-6 py-4">
+        <div class="text-sm text-gray-900">إيداع نقدي في بداية اليوم</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900">عبد الرحمن محمد</div>
+        </td>
+        </tr>
+        </tbody>
+        </table>
+        </div>
+        <!-- Pagination -->
+        <div class="flex items-center justify-between mt-6">
+        <div class="text-sm text-gray-700">
+        عرض <span class="font-medium">١</span> إلى <span class="font-medium">٥</span> من أصل <span class="font-medium">٢٨</span> عملية
+        </div>
+        <div class="flex items-center gap-2">
+        <button class="px-3 py-1 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed !rounded-button whitespace-nowrap" disabled>
+        السابق
+        </button>
+        <button class="px-3 py-1 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 !rounded-button whitespace-nowrap">
+        التالي
+        </button>
+        </div>
+        </div>
+        </div>
+        </div>
+    </div>
+    <div id="transactions-content" style="display: none;">
+        <!-- Breadcrumb -->
+        <nav class="flex mb-4" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 space-x-reverse">
+                <li class="inline-flex items-center">
+                    <a href="#" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary">
+                        <div class="w-4 h-4 flex items-center justify-center ml-2">
+                            <i class="ri-dashboard-line"></i>
+                        </div>
+                        لوحة التحكم
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <div class="w-4 h-4 flex items-center justify-center text-gray-400 mx-1">
+                            <i class="ri-arrow-left-s-line"></i>
+                        </div>
+                        <span class="text-sm font-medium text-primary" aria-current="page">إدارة المعاملات</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+
+        <div class="mb-6 flex flex-wrap justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800">إدارة المعاملات</h1>
+                <p class="text-gray-600">عرض وإدارة جميع المعاملات المالية</p>
+            </div>
+            <div class="flex gap-3 mt-3 sm:mt-0">
+                <button id="exportBtn" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center gap-1 !rounded-button whitespace-nowrap">
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-download-line"></i>
+                    </div>
+                    <span>تصدير التقرير</span>
+                </button>
+                <button id="addTransactionBtn" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 flex items-center gap-1 !rounded-button whitespace-nowrap">
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-add-line"></i>
+                    </div>
+                    <span>إضافة معاملة</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+            <div class="bg-white rounded shadow-sm p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-700">إجمالي المعاملات</h3>
+                    <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                        <div class="w-6 h-6 flex items-center justify-center">
+                            <i class="ri-exchange-funds-line text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-3xl font-bold text-gray-800">١,٢٤٥</p>
+                <div class="flex items-center mt-2">
+                    <div class="w-4 h-4 flex items-center justify-center">
+                        <i class="ri-arrow-up-line text-green-500"></i>
+                    </div>
+                    <span class="text-sm text-green-500 font-medium">٨.٥٪</span>
+                    <span class="text-sm text-gray-500 mr-1">مقارنة بالشهر الماضي</span>
+                </div>
+            </div>
+            <div class="bg-white rounded shadow-sm p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-700">إجمالي المبالغ</h3>
+                    <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                        <div class="w-6 h-6 flex items-center justify-center">
+                            <i class="ri-money-dollar-circle-line text-green-600"></i>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-3xl font-bold text-gray-800">١٢٥,٧٦٠ ر.س</p>
+                <div class="flex items-center mt-2">
+                    <div class="w-4 h-4 flex items-center justify-center">
+                        <i class="ri-arrow-up-line text-green-500"></i>
+                    </div>
+                    <span class="text-sm text-green-500 font-medium">١٢.٣٪</span>
+                    <span class="text-sm text-gray-500 mr-1">مقارنة بالشهر الماضي</span>
+                </div>
+            </div>
+            <div class="bg-white rounded shadow-sm p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-700">معدل التحصيل</h3>
+                    <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                        <div class="w-6 h-6 flex items-center justify-center">
+                            <i class="ri-percent-line text-indigo-600"></i>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-3xl font-bold text-gray-800">٩٢.٥٪</p>
+                <div class="flex items-center mt-2">
+                    <div class="w-4 h-4 flex items-center justify-center">
+                        <i class="ri-arrow-up-line text-green-500"></i>
+                    </div>
+                    <span class="text-sm text-green-500 font-medium">٣.٢٪</span>
+                    <span class="text-sm text-gray-500 mr-1">مقارنة بالشهر الماضي</span>
+                </div>
+            </div>
+            <div class="bg-white rounded shadow-sm p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-700">معاملات معلقة</h3>
+                    <div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
+                        <div class="w-6 h-6 flex items-center justify-center">
+                            <i class="ri-time-line text-amber-600"></i>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-3xl font-bold text-gray-800">٢٨</p>
+                <div class="flex items-center mt-2">
+                    <div class="w-4 h-4 flex items-center justify-center">
+                        <i class="ri-arrow-down-line text-red-500"></i>
+                    </div>
+                    <span class="text-sm text-red-500 font-medium">٥.٨٪</span>
+                    <span class="text-sm text-gray-500 mr-1">مقارنة بالشهر الماضي</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div class="bg-white rounded shadow-sm p-6 md:col-span-2">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-semibold text-gray-700">تحليل المعاملات حسب الفترة</h3>
+                    <div class="flex items-center gap-2">
+                        <button class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full !rounded-button hover:bg-gray-200 whitespace-nowrap">اليوم</button>
+                        <button class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full !rounded-button hover:bg-gray-200 whitespace-nowrap">الأسبوع</button>
+                        <button class="px-3 py-1 text-sm bg-primary text-white rounded-full !rounded-button hover:bg-primary/90 whitespace-nowrap">الشهر</button>
+                        <button class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full !rounded-button hover:bg-gray-200 whitespace-nowrap">السنة</button>
+                    </div>
+                </div>
+                <div id="transactionTrendChart" class="w-full h-64"></div>
+            </div>
+            <div class="bg-white rounded shadow-sm p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-semibold text-gray-700">توزيع طرق الدفع</h3>
+                    <button class="text-primary text-sm hover:underline whitespace-nowrap">عرض التفاصيل</button>
+                </div>
+                        <div id="txPaymentMethodChart" class="w-full h-64"></div> <!-- Changed ID to avoid conflict -->
+            </div>
+        </div>
+
+        <!-- Transactions Section -->
+        <div class="bg-white rounded shadow-sm p-6 mb-6">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-semibold text-gray-700">قائمة المعاملات</h3>
+                <div class="flex gap-2">
+                    <button id="printBtn" class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center gap-1 !rounded-button whitespace-nowrap">
+                        <div class="w-4 h-4 flex items-center justify-center">
+                            <i class="ri-printer-line"></i>
+                        </div>
+                        <span>طباعة</span>
+                    </button>
+                    <div class="relative">
+                        <button id="exportDropdownBtn" class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center gap-1 !rounded-button whitespace-nowrap">
+                            <div class="w-4 h-4 flex items-center justify-center">
+                                <i class="ri-download-line"></i>
+                            </div>
+                            <span>تصدير</span>
+                            <div class="w-4 h-4 flex items-center justify-center">
+                                <i class="ri-arrow-down-s-line"></i>
+                            </div>
+                        </button>
+                        <div id="exportDropdownMenu" class="hidden absolute z-10 mt-1 w-36 bg-white shadow-lg rounded-lg py-1 left-0">
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2">
+                                <div class="w-4 h-4 flex items-center justify-center">
+                                    <i class="ri-file-excel-line text-green-600"></i>
+                                </div>
+                                <span>Excel</span>
+                            </a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2">
+                                <div class="w-4 h-4 flex items-center justify-center">
+                                    <i class="ri-file-pdf-line text-red-600"></i>
+                                </div>
+                                <span>PDF</span>
+                            </a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2">
+                                <div class="w-4 h-4 flex items-center justify-center">
+                                    <i class="ri-file-text-line text-gray-600"></i>
+                                </div>
+                                <span>CSV</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Advanced Filters -->
+            <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                <div class="flex flex-wrap gap-4 mb-4">
+                    <div class="relative flex-1 min-w-[200px]">
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-search-line text-gray-400"></i>
+                            </div>
+                        </div>
+                        <input type="text" class="bg-white border-none text-gray-900 text-sm rounded-lg block w-full pr-10 p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none" placeholder="البحث برقم المعاملة أو اسم العميل...">
+                    </div>
+                    
+                    <div class="relative min-w-[200px]">
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-calendar-line text-gray-400"></i>
+                            </div>
+                        </div>
+                        <button id="dateRangeBtnTransactions" class="bg-white border-none text-gray-900 text-sm rounded-lg block w-full pr-10 p-2.5 text-right focus:ring-2 focus:ring-primary/20 focus:outline-none flex items-center justify-between whitespace-nowrap"> <!-- Changed ID -->
+                            <span>الفترة: ٢٦ أبريل - ٢٦ مايو ٢٠٢٥</span>
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-arrow-down-s-line text-gray-400"></i>
+                            </div>
+                        </button>
+                        <div id="dateRangeCalendarTransactions" class="hidden calendar absolute z-20 mt-1 bg-white rounded-lg shadow-lg p-4 w-[300px]"> <!-- Changed ID -->
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="font-medium">اختر الفترة الزمنية</h4>
+                                <button id="closeDateRangeTransactions" class="text-gray-500 hover:text-gray-700"> <!-- Changed ID -->
+                                    <div class="w-5 h-5 flex items-center justify-center">
+                                        <i class="ri-close-line"></i>
+                                    </div>
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">من</label>
+                                    <input type="date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 focus:ring-2 focus:ring-primary/20 focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">إلى</label>
+                                    <input type="date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2 focus:ring-2 focus:ring-primary/20 focus:outline-none">
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <button class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full !rounded-button hover:bg-gray-200 whitespace-nowrap">اليوم</button>
+                                <button class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full !rounded-button hover:bg-gray-200 whitespace-nowrap">أمس</button>
+                                <button class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full !rounded-button hover:bg-gray-200 whitespace-nowrap">آخر ٧ أيام</button>
+                                <button class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full !rounded-button hover:bg-gray-200 whitespace-nowrap">آخر ٣٠ يوم</button>
+                                <button class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full !rounded-button hover:bg-gray-200 whitespace-nowrap">هذا الشهر</button>
+                                <button class="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-full !rounded-button hover:bg-gray-200 whitespace-nowrap">الشهر الماضي</button>
+                            </div>
+                            <div class="flex justify-end">
+                                <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 !rounded-button whitespace-nowrap">تطبيق</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex flex-wrap gap-4">
+                    <div class="relative min-w-[150px]">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-arrow-down-s-line text-gray-400"></i>
+                            </div>
+                        </div>
+                        <button id="branchDropdownTransactions" class="bg-white border-none text-gray-900 text-sm rounded-lg block w-full pl-10 p-2.5 text-right focus:ring-2 focus:ring-primary/20 focus:outline-none whitespace-nowrap"> <!-- Changed ID -->
+                            جميع الفروع
+                        </button>
+                        <div id="branchDropdownMenuTransactions" class="hidden absolute z-10 mt-1 w-full bg-white shadow-lg rounded-lg py-1"> <!-- Changed ID -->
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">جميع الفروع</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">فرع الرياض</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">فرع جدة</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">فرع الدمام</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">فرع المدينة</a>
+                        </div>
+                    </div>
+                    
+                    <div class="relative min-w-[150px]">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-arrow-down-s-line text-gray-400"></i>
+                            </div>
+                        </div>
+                        <button id="representativeDropdownTransactions" class="bg-white border-none text-gray-900 text-sm rounded-lg block w-full pl-10 p-2.5 text-right focus:ring-2 focus:ring-primary/20 focus:outline-none whitespace-nowrap"> <!-- Changed ID -->
+                            جميع المندوبين
+                        </button>
+                        <div id="representativeDropdownMenuTransactions" class="hidden absolute z-10 mt-1 w-full bg-white shadow-lg rounded-lg py-1"> <!-- Changed ID -->
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">جميع المندوبين</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">محمد عبد العزيز</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">أحمد خالد</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">عمر سعيد</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">فيصل العتيبي</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">سلطان الشمري</a>
+                        </div>
+                    </div>
+                    
+                    <div class="relative min-w-[150px]">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-arrow-down-s-line text-gray-400"></i>
+                            </div>
+                        </div>
+                        <button id="paymentMethodDropdownTransactions" class="bg-white border-none text-gray-900 text-sm rounded-lg block w-full pl-10 p-2.5 text-right focus:ring-2 focus:ring-primary/20 focus:outline-none whitespace-nowrap"> <!-- Changed ID -->
+                            طريقة الدفع
+                        </button>
+                        <div id="paymentMethodDropdownMenuTransactions" class="hidden absolute z-10 mt-1 w-full bg-white shadow-lg rounded-lg py-1"> <!-- Changed ID -->
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">جميع الطرق</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">نقدي</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">بطاقة ائتمان</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">محفظة إلكترونية</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">تحويل بنكي</a>
+                        </div>
+                    </div>
+                    
+                    <div class="relative min-w-[150px]">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-arrow-down-s-line text-gray-400"></i>
+                            </div>
+                        </div>
+                        <button id="statusDropdownTransactions" class="bg-white border-none text-gray-900 text-sm rounded-lg block w-full pl-10 p-2.5 text-right focus:ring-2 focus:ring-primary/20 focus:outline-none whitespace-nowrap"> <!-- Changed ID -->
+                            الحالة
+                        </button>
+                        <div id="statusDropdownMenuTransactions" class="hidden absolute z-10 mt-1 w-full bg-white shadow-lg rounded-lg py-1"> <!-- Changed ID -->
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">جميع الحالات</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">مكتملة</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">معلقة</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">ملغاة</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">قيد المعالجة</a>
+                        </div>
+                    </div>
+                    
+                    <button class="px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 !rounded-button whitespace-nowrap">
+                        <div class="flex items-center gap-1">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-filter-3-line"></i>
+                            </div>
+                            <span>تطبيق الفلتر</span>
+                        </div>
+                    </button>
+                    
+                    <button class="px-4 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 !rounded-button whitespace-nowrap">
+                        <div class="flex items-center gap-1">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-refresh-line"></i>
+                            </div>
+                            <span>إعادة تعيين</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Table -->
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-3 py-3 text-center">
+                                <div class="custom-checkbox" id="selectAllCheckboxTransactions"></div> <!-- Changed ID -->
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                رقم المعاملة
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                اسم العميل
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                المبلغ
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                طريقة الدفع
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                التاريخ
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                الفرع
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                المندوب
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                الحالة
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                خيارات
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-3 py-4 whitespace-nowrap text-center">
+                                <div class="custom-checkbox transaction-checkbox"></div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 font-medium">#INV-2025-0142</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs">س</div>
+                                    <div class="mr-3">
+                                        <div class="text-sm font-medium text-gray-900">سعيد محمد الأحمد</div>
+                                        <div class="text-xs text-gray-500">+966 55 123 4567</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900 font-medium">١,٢٥٠ ر.س</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="w-6 h-6 flex items-center justify-center ml-1">
+                                        <i class="ri-bank-card-line text-indigo-600"></i>
+                                    </div>
+                                    <span class="text-sm text-gray-900">بطاقة ائتمان</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">٢٦ مايو ٢٠٢٥</div>
+                                <div class="text-xs text-gray-500">١٠:٣٠ ص</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">فرع الرياض</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">محمد عبد العزيز</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="status-badge completed">مكتملة</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <div class="flex items-center gap-2 justify-end">
+                                    <button class="text-primary hover:text-primary/80 whitespace-nowrap transaction-details-btn" data-id="INV-2025-0142">عرض التفاصيل</button>
+                                    <div class="relative">
+                                        <button class="text-gray-500 hover:text-gray-700 transaction-actions-btn">
+                                            <div class="w-6 h-6 flex items-center justify-center">
+                                                <i class="ri-more-2-fill"></i>
+                                            </div>
+                                        </button>
+                                        <div class="hidden absolute z-10 mt-1 w-36 bg-white shadow-lg rounded-lg py-1 left-0 transaction-actions-menu">
+                                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2">
+                                                <div class="w-4 h-4 flex items-center justify-center">
+                                                    <i class="ri-edit-line"></i>
+                                                </div>
+                                                <span>تعديل</span>
+                                            </a>
+                                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2">
+                                                <div class="w-4 h-4 flex items-center justify-center">
+                                                    <i class="ri-printer-line"></i>
+                                                </div>
+                                                <span>طباعة</span>
+                                            </a>
+                                            <a href="#" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2">
+                                                <div class="w-4 h-4 flex items-center justify-center">
+                                                    <i class="ri-delete-bin-line"></i>
+                                                </div>
+                                                <span>حذف</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- More rows here -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="flex flex-wrap items-center justify-between mt-6">
+                <div class="text-sm text-gray-700 mb-4 sm:mb-0">
+                    عرض <span class="font-medium">١</span> إلى <span class="font-medium">٨</span> من أصل <span class="font-medium">١,٢٤٥</span> معاملة
+                </div>
+                <div class="flex items-center gap-2">
+                    <button class="px-3 py-1 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed !rounded-button whitespace-nowrap" disabled>
+                        السابق
+                    </button>
+                    <button class="px-3 py-1 border border-primary bg-primary text-white rounded-md hover:bg-primary/90 !rounded-button whitespace-nowrap">١</button>
+                    <button class="px-3 py-1 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 !rounded-button whitespace-nowrap">٢</button>
+                    <button class="px-3 py-1 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 !rounded-button whitespace-nowrap">٣</button>
+                    <span class="px-3 py-1 text-gray-700">...</span>
+                    <button class="px-3 py-1 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 !rounded-button whitespace-nowrap">١٥٦</button>
+                    <button class="px-3 py-1 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 !rounded-button whitespace-nowrap">
+                        التالي
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</div>
+</div>
+
+<!-- Modals -->
+<!-- Add to Cashbox Modal -->
+<div id="addToBoxModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+<div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-semibold text-gray-800">إضافة مبلغ إلى الخزنة</h3>
+<button id="closeAddModal" class="text-gray-500 hover:text-gray-700">
+<div class="w-6 h-6 flex items-center justify-center">
+<i class="ri-close-line text-xl"></i>
+</div>
+</button>
+</div>
+<form>
+<div class="mb-4">
+<label for="addAmount" class="block text-sm font-medium text-gray-700 mb-1">المبلغ</label>
+<div class="relative">
+<input type="number" id="addAmount" class="bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg block w-full p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none" placeholder="أدخل المبلغ" required>
+<div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+<span class="text-gray-500">ر.س</span>
+</div>
+</div>
+</div>
+<div class="mb-6">
+<label for="addNotes" class="block text-sm font-medium text-gray-700 mb-1">ملاحظات</label>
+<textarea id="addNotes" rows="3" class="bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg block w-full p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none" placeholder="أدخل ملاحظات حول العملية"></textarea>
+</div>
+<div class="flex justify-end gap-2">
+<button type="button" id="cancelAddBtn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 !rounded-button whitespace-nowrap">إلغاء</button>
+<button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 !rounded-button whitespace-nowrap">تأكيد الإضافة</button>
+</div>
+</form>
+</div>
+</div>
+<!-- Withdraw from Cashbox Modal -->
+<div id="withdrawFromBoxModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+<div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-semibold text-gray-800">سحب مبلغ من الخزنة</h3>
+<button id="closeWithdrawModal" class="text-gray-500 hover:text-gray-700">
+<div class="w-6 h-6 flex items-center justify-center">
+<i class="ri-close-line text-xl"></i>
+</div>
+</button>
+</div>
+<form>
+<div class="mb-4">
+<label for="withdrawAmount" class="block text-sm font-medium text-gray-700 mb-1">المبلغ</label>
+<div class="relative">
+<input type="number" id="withdrawAmount" class="bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg block w-full p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none" placeholder="أدخل المبلغ" required>
+<div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+<span class="text-gray-500">ر.س</span>
+</div>
+</div>
+</div>
+<div class="mb-6">
+<label for="withdrawNotes" class="block text-sm font-medium text-gray-700 mb-1">ملاحظات</label>
+<textarea id="withdrawNotes" rows="3" class="bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg block w-full p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none" placeholder="أدخل ملاحظات حول العملية"></textarea>
+</div>
+<div class="flex justify-end gap-2">
+<button type="button" id="cancelWithdrawBtn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 !rounded-button whitespace-nowrap">إلغاء</button>
+<button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 !rounded-button whitespace-nowrap">تأكيد السحب</button>
+</div>
+</form>
+</div>
+</div>
+
+<!-- Transaction Details Modal -->
+    <div id="transactionDetailsModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl p-6 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-semibold text-gray-800">تفاصيل المعاملة <span id="transactionIdDisplay">#INV-2025-0142</span></h3>
+                <button id="closeTransactionDetailsModal" class="text-gray-500 hover:text-gray-700">
+                    <div class="w-6 h-6 flex items-center justify-center">
+                        <i class="ri-close-line text-xl"></i>
+                    </div>
+                </button>
+            </div>
+            
+            <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                <div class="flex flex-wrap justify-between items-center">
+                    <div>
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold" id="modalCustomerAvatar">س</div>
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-800" id="modalCustomerName">سعيد محمد الأحمد</h4>
+                                <p class="text-sm text-gray-600" id="modalCustomerPhone">+966 55 123 4567</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 sm:mt-0">
+                        <span class="status-badge completed" id="modalStatusBadge">مكتملة</span>
+                        <p class="text-sm text-gray-600 mt-1" id="modalDateTime">٢٦ مايو ٢٠٢٥، ١٠:٣٠ ص</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4">معلومات المعاملة</h4>
+                    <div class="bg-white border border-gray-200 rounded-lg">
+                        <div class="border-b border-gray-200 p-4">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">رقم المعاملة</span>
+                                <span class="font-medium text-gray-900" id="modalTransactionIdInfo">#INV-2025-0142</span>
+                            </div>
+                        </div>
+                        <div class="border-b border-gray-200 p-4">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">المبلغ</span>
+                                <span class="font-medium text-gray-900" id="modalAmountInfo">١,٢٥٠ ر.س</span>
+                            </div>
+                        </div>
+                        <div class="border-b border-gray-200 p-4">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">طريقة الدفع</span>
+                                <div class="flex items-center">
+                                    <div class="w-5 h-5 flex items-center justify-center ml-1">
+                                        <i class="ri-bank-card-line text-indigo-600" id="modalPaymentMethodIcon"></i>
+                                    </div>
+                                    <span class="font-medium text-gray-900" id="modalPaymentMethodText">بطاقة ائتمان</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="border-b border-gray-200 p-4">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">الفرع</span>
+                                <span class="font-medium text-gray-900" id="modalBranchInfo">فرع الرياض</span>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">المندوب</span>
+                                <span class="font-medium text-gray-900" id="modalRepresentativeInfo">محمد عبد العزيز</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4">تفاصيل الدفع</h4>
+                    <div class="bg-white border border-gray-200 rounded-lg">
+                        <div class="border-b border-gray-200 p-4">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">رقم البطاقة</span>
+                                <span class="font-medium text-gray-900" id="modalCardNumber">**** **** **** 4832</span>
+                            </div>
+                        </div>
+                        <div class="border-b border-gray-200 p-4">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">اسم حامل البطاقة</span>
+                                <span class="font-medium text-gray-900" id="modalCardHolder">سعيد محمد الأحمد</span>
+                            </div>
+                        </div>
+                        <div class="border-b border-gray-200 p-4">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">تاريخ العملية</span>
+                                <span class="font-medium text-gray-900" id="modalTransactionDate">٢٦ مايو ٢٠٢٥</span>
+                            </div>
+                        </div>
+                        <div class="border-b border-gray-200 p-4">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">وقت العملية</span>
+                                <span class="font-medium text-gray-900" id="modalTransactionTime">١٠:٣٠:١٥ ص</span>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">رقم المرجع</span>
+                                <span class="font-medium text-gray-900" id="modalReferenceNumber">REF-2025052600123</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <h4 class="text-lg font-semibold text-gray-800 mb-4">تفاصيل المنتجات</h4>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    المنتج
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    الكمية
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    السعر
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    الإجمالي
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200" id="modalProductList">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900">باقة الخدمات المتكاملة</div>
+                                    <div class="text-xs text-gray-500">PACKAGE-001</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">١</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">١,٠٠٠ ر.س</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">١,٠٠٠ ر.س</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium text-gray-900">خدمة إضافية</div>
+                                    <div class="text-xs text-gray-500">SERVICE-002</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">١</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">٢٥٠ ر.س</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">٢٥٠ ر.س</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot class="bg-gray-50">
+                            <tr>
+                                <td colspan="2" class="px-6 py-4 whitespace-nowrap"></td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">المجموع</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" id="modalTotalAmount">١,٢٥٠ ر.س</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <h4 class="text-lg font-semibold text-gray-800 mb-4">ملاحظات</h4>
+                <div class="bg-white border border-gray-200 rounded-lg p-4">
+                    <p class="text-gray-700" id="modalNotes">تم استلام المبلغ بالكامل وإتمام المعاملة بنجاح. العميل راضٍ عن الخدمة المقدمة.</p>
+                </div>
+            </div>
+            
+            <div class="flex flex-wrap justify-between gap-4">
+                <div>
+                    <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center gap-1 !rounded-button whitespace-nowrap">
+                        <div class="w-5 h-5 flex items-center justify-center">
+                            <i class="ri-printer-line"></i>
+                        </div>
+                        <span>طباعة الإيصال</span>
+                    </button>
+                </div>
+                <div class="flex gap-2">
+                    <button class="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 flex items-center gap-1 !rounded-button whitespace-nowrap">
+                        <div class="w-5 h-5 flex items-center justify-center">
+                            <i class="ri-edit-line"></i>
+                        </div>
+                        <span>تعديل المعاملة</span>
+                    </button>
+                    <button id="closeTransactionDetailsModalBtn" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 !rounded-button whitespace-nowrap">إغلاق</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Transaction Modal -->
+    <div id="addTransactionModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl p-6 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-semibold text-gray-800">إضافة معاملة جديدة</h3>
+                <button id="closeAddTransactionModal" class="text-gray-500 hover:text-gray-700">
+                    <div class="w-6 h-6 flex items-center justify-center">
+                        <i class="ri-close-line text-xl"></i>
+                    </div>
+                </button>
+            </div>
+            
+            <form>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4">معلومات العميل</h4>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="customerName" class="block text-sm font-medium text-gray-700 mb-1">اسم العميل</label>
+                                <input type="text" id="customerName" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none" placeholder="أدخل اسم العميل" required>
+                            </div>
+                            <div>
+                                <label for="customerPhone" class="block text-sm font-medium text-gray-700 mb-1">رقم الجوال</label>
+                                <input type="tel" id="customerPhone" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none" placeholder="أدخل رقم الجوال" required>
+                            </div>
+                            <div>
+                                <label for="customerEmail" class="block text-sm font-medium text-gray-700 mb-1">البريد الإلكتروني</label>
+                                <input type="email" id="customerEmail" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none" placeholder="أدخل البريد الإلكتروني">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4">تفاصيل المعاملة</h4>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="transactionAmount" class="block text-sm font-medium text-gray-700 mb-1">المبلغ</label>
+                                <div class="relative">
+                                    <input type="number" id="transactionAmount" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none" placeholder="أدخل المبلغ" required>
+                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                        <span class="text-gray-500">ر.س</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="paymentMethodModal" class="block text-sm font-medium text-gray-700 mb-1">طريقة الدفع</label> <!-- Changed ID -->
+                                <div class="relative">
+                                    <select id="paymentMethodModal" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none pr-8" required>
+                                        <option value="" disabled selected>اختر طريقة الدفع</option>
+                                        <option value="cash">نقدي</option>
+                                        <option value="card">بطاقة ائتمان</option>
+                                        <option value="wallet">محفظة إلكترونية</option>
+                                        <option value="bank">تحويل بنكي</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="branchModal" class="block text-sm font-medium text-gray-700 mb-1">الفرع</label> <!-- Changed ID -->
+                                <div class="relative">
+                                    <select id="branchModal" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none pr-8" required>
+                                        <option value="" disabled selected>اختر الفرع</option>
+                                        <option value="riyadh">فرع الرياض</option>
+                                        <option value="jeddah">فرع جدة</option>
+                                        <option value="dammam">فرع الدمام</option>
+                                        <option value="madinah">فرع المدينة</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="representativeModal" class="block text-sm font-medium text-gray-700 mb-1">المندوب</label> <!-- Changed ID -->
+                                <div class="relative">
+                                    <select id="representativeModal" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none pr-8" required>
+                                        <option value="" disabled selected>اختر المندوب</option>
+                                        <option value="mohammed">محمد عبد العزيز</option>
+                                        <option value="ahmed">أحمد خالد</option>
+                                        <option value="omar">عمر سعيد</option>
+                                        <option value="faisal">فيصل العتيبي</option>
+                                        <option value="sultan">سلطان الشمري</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4">المنتجات والخدمات</h4>
+                    <div class="overflow-x-auto mb-4">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        المنتج
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        الكمية
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        السعر
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        الإجمالي
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        حذف
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200" id="productList">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="relative">
+                                            <select class="product-select bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none pr-8" required>
+                                                <option value="" disabled selected>اختر المنتج</option>
+                                                <option value="package1">باقة الخدمات المتكاملة</option>
+                                                <option value="service1">خدمة إضافية</option>
+                                                <option value="product1">منتج 1</option>
+                                                <option value="product2">منتج 2</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <input type="number" class="product-quantity bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none" value="1" min="1">
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="relative">
+                                            <input type="number" class="product-price bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none" placeholder="السعر">
+                                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                <span class="text-gray-500">ر.س</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="product-total text-sm text-gray-900">٠ ر.س</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        <button type="button" class="remove-product text-red-600 hover:text-red-800">
+                                            <div class="w-5 h-5 flex items-center justify-center">
+                                                <i class="ri-delete-bin-line"></i>
+                                            </div>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot class="bg-gray-50">
+                                <tr>
+                                    <td colspan="5" class="px-6 py-4">
+                                        <button type="button" id="addProductBtn" class="text-primary hover:text-primary/80 flex items-center gap-1">
+                                            <div class="w-5 h-5 flex items-center justify-center">
+                                                <i class="ri-add-line"></i>
+                                            </div>
+                                            <span>إضافة منتج</span>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" class="px-6 py-4 whitespace-nowrap"></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">المجموع</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" id="totalAmount">٠ ر.س</td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">ملاحظات</label>
+                    <textarea id="notes" rows="3" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none" placeholder="أدخل ملاحظات حول المعاملة"></textarea>
+                </div>
+                
+                <div class="flex justify-end gap-2">
+                    <button type="button" id="cancelAddTransactionBtn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 !rounded-button whitespace-nowrap">إلغاء</button>
+                    <button type="submit" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 !rounded-button whitespace-nowrap">حفظ المعاملة</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Export Report Modal -->
+    <div id="exportReportModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-semibold text-gray-800">تصدير تقرير المعاملات</h3>
+                <button id="closeExportReportModal" class="text-gray-500 hover:text-gray-700">
+                    <div class="w-6 h-6 flex items-center justify-center">
+                        <i class="ri-close-line text-xl"></i>
+                    </div>
+                </button>
+            </div>
+            
+            <form>
+                <div class="mb-4">
+                    <label for="reportType" class="block text-sm font-medium text-gray-700 mb-1">نوع التقرير</label>
+                    <div class="relative">
+                        <select id="reportType" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none pr-8" required>
+                            <option value="all">جميع المعاملات</option>
+                            <option value="completed">المعاملات المكتملة</option>
+                            <option value="pending">المعاملات المعلقة</option>
+                            <option value="cancelled">المعاملات الملغاة</option>
+                            <option value="processing">المعاملات قيد المعالجة</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="reportDateRange" class="block text-sm font-medium text-gray-700 mb-1">الفترة الزمنية</label>
+                    <div class="relative">
+                        <select id="reportDateRange" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none pr-8" required>
+                            <option value="today">اليوم</option>
+                            <option value="yesterday">أمس</option>
+                            <option value="week">آخر ٧ أيام</option>
+                            <option value="month" selected>آخر ٣٠ يوم</option>
+                            <option value="custom">فترة مخصصة</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="customDateRange" class="grid grid-cols-2 gap-4 mb-4 hidden">
+                    <div>
+                        <label for="reportStartDate" class="block text-sm font-medium text-gray-700 mb-1">من</label>
+                        <input type="date" id="reportStartDate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none">
+                    </div>
+                    <div>
+                        <label for="reportEndDate" class="block text-sm font-medium text-gray-700 mb-1">إلى</label>
+                        <input type="date" id="reportEndDate" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none">
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="reportFormat" class="block text-sm font-medium text-gray-700 mb-1">صيغة التقرير</label>
+                    <div class="relative">
+                        <select id="reportFormat" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none pr-8" required>
+                            <option value="excel">Excel</option>
+                            <option value="pdf">PDF</option>
+                            <option value="csv">CSV</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <div class="flex items-center">
+                        <input id="includeDetails" type="checkbox" class="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary/20">
+                        <label for="includeDetails" class="mr-2 text-sm font-medium text-gray-700">تضمين تفاصيل المعاملات</label>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end gap-2">
+                    <button type="button" id="cancelExportBtn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 !rounded-button whitespace-nowrap">إلغاء</button>
+                    <button type="submit" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 !rounded-button whitespace-nowrap">تصدير التقرير</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+<script id="mainAppScript">
+document.addEventListener('DOMContentLoaded', function() {
+    // --- Flags for chart initialization ---
+    let isAdminChartsInitialized = false;
+    let isTransactionChartsInitialized = false;
+
+    // --- Sidebar Toggle Logic ---
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.querySelector('aside');
+    if (menuToggle && sidebar) {
+        menuToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('hidden');
+        });
+    }
+
+    // --- View Switching Logic ---
+    const adminDashboardContent = document.getElementById('admin-dashboard-content');
+    const transactionsContent = document.getElementById('transactions-content');
+    const navDashboard = document.getElementById('nav-dashboard');
+    const navTransactions = document.getElementById('nav-transactions');
+    const navDashboardIcon = navDashboard ? navDashboard.querySelector('i') : null;
+    const navTransactionsIcon = navTransactions ? navTransactions.querySelector('i') : null;
+
+    const activeLinkClasses = ['bg-gray-100', 'border-r-4', 'border-primary', 'text-gray-700'];
+    const inactiveLinkClasses = ['text-gray-600', 'hover:bg-gray-50'];
+    const activeIconClass = 'text-primary';
+
+    function showAdminDashboard() {
+        if (adminDashboardContent) adminDashboardContent.style.display = 'block';
+        if (transactionsContent) transactionsContent.style.display = 'none';
+
+        if (navDashboard) {
+            navDashboard.classList.add(...activeLinkClasses);
+            navDashboard.classList.remove(...inactiveLinkClasses);
+        }
+        if (navDashboardIcon) navDashboardIcon.classList.add(activeIconClass);
+
+        if (navTransactions) {
+            navTransactions.classList.add(...inactiveLinkClasses);
+            navTransactions.classList.remove(...activeLinkClasses);
+        }
+        if (navTransactionsIcon) navTransactionsIcon.classList.remove(activeIconClass);
+        
+        if (!isAdminChartsInitialized) {
+            initAdminCharts();
+            isAdminChartsInitialized = true;
+        }
+    }
+
+    function showTransactions() {
+        if (adminDashboardContent) adminDashboardContent.style.display = 'none';
+        if (transactionsContent) transactionsContent.style.display = 'block';
+
+        if (navTransactions) {
+            navTransactions.classList.add(...activeLinkClasses);
+            navTransactions.classList.remove(...inactiveLinkClasses);
+        }
+        if (navTransactionsIcon) navTransactionsIcon.classList.add(activeIconClass);
+        
+        if (navDashboard) {
+            navDashboard.classList.add(...inactiveLinkClasses);
+            navDashboard.classList.remove(...activeLinkClasses);
+        }
+        if (navDashboardIcon) navDashboardIcon.classList.remove(activeIconClass);
+
+        if (!isTransactionChartsInitialized) {
+            initTransactionCharts();
+            isTransactionChartsInitialized = true;
+        }
+    }
+
+    if (navDashboard) {
+        navDashboard.addEventListener('click', function(event) {
+            event.preventDefault();
+            showAdminDashboard();
+        });
+    }
+
+    if (navTransactions) {
+        navTransactions.addEventListener('click', function(event) {
+            event.preventDefault();
+            showTransactions();
+        });
+    }
+    
+    // --- Chart Initialization Functions ---
+    function initAdminCharts() {
+        const transactionChartAdminEl = document.getElementById('adminTransactionChart');
+        if (transactionChartAdminEl) {
+            const transactionChartAdmin = echarts.init(transactionChartAdminEl);
+            const transactionOptionAdmin = {
+                animation: false, tooltip: { trigger: 'axis', backgroundColor: 'rgba(255, 255, 255, 0.9)', borderColor: '#e2e8f0', textStyle: { color: '#1f2937' }},
+                grid: { top: 10, right: 10, bottom: 20, left: 10, containLabel: true },
+                xAxis: { type: 'category', data: ['السبت', 'الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'], axisLine: { lineStyle: { color: '#e2e8f0' }}, axisLabel: { color: '#1f2937' }},
+                yAxis: { type: 'value', axisLine: { show: false }, axisLabel: { color: '#1f2937' }, splitLine: { lineStyle: { color: '#e2e8f0' }}},
+                series: [
+                    { name: 'نقدي', type: 'line', smooth: true, symbol: 'none', data: [4200, 3800, 5100, 4600, 5800, 6200, 5760], lineStyle: { color: 'rgba(87, 181, 231, 1)' }, areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(87, 181, 231, 0.3)' },{ offset: 1, color: 'rgba(87, 181, 231, 0.1)' }])}},
+                    { name: 'محفظة إلكترونية', type: 'line', smooth: true, symbol: 'none', data: [1800, 2200, 2500, 3100, 3400, 3800, 4200], lineStyle: { color: 'rgba(141, 211, 199, 1)' }, areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(141, 211, 199, 0.3)' },{ offset: 1, color: 'rgba(141, 211, 199, 0.1)' }])}}
+                ]
+            };
+            transactionChartAdmin.setOption(transactionOptionAdmin);
+            window.addEventListener('resize', () => transactionChartAdmin.resize());
+        }
+
+        const paymentMethodChartAdminEl = document.getElementById('adminPaymentMethodChart');
+        if (paymentMethodChartAdminEl) {
+            const paymentMethodChartAdmin = echarts.init(paymentMethodChartAdminEl);
+            const paymentMethodOptionAdmin = {
+                animation: false, tooltip: { trigger: 'item', backgroundColor: 'rgba(255, 255, 255, 0.9)', borderColor: '#e2e8f0', textStyle: { color: '#1f2937' }},
+                legend: { orient: 'vertical', right: 10, top: 'center', textStyle: { color: '#1f2937' }},
+                series: [{ name: 'طرق الدفع', type: 'pie', radius: ['40%', '70%'], center: ['40%', '50%'], avoidLabelOverlap: false, itemStyle: { borderRadius: 8, borderColor: '#fff', borderWidth: 2 }, label: { show: false }, emphasis: { label: { show: false }}, labelLine: { show: false }, data: [ { value: 45, name: 'نقدي', itemStyle: { color: 'rgba(87, 181, 231, 1)' } }, { value: 30, name: 'بطاقة ائتمان', itemStyle: { color: 'rgba(141, 211, 199, 1)' } }, { value: 25, name: 'محفظة إلكترونية', itemStyle: { color: 'rgba(251, 191, 114, 1)' } } ]}]
+            };
+            paymentMethodChartAdmin.setOption(paymentMethodOptionAdmin);
+            window.addEventListener('resize', () => paymentMethodChartAdmin.resize());
+        }
+    }
+
+    function initTransactionCharts() {
+        const transactionTrendChartEl = document.getElementById('transactionTrendChart');
+        if (transactionTrendChartEl) {
+            const transactionTrendChart = echarts.init(transactionTrendChartEl);
+            const transactionTrendOption = {
+                animation: false, tooltip: { trigger: 'axis', backgroundColor: 'rgba(255, 255, 255, 0.9)', borderColor: '#e2e8f0', textStyle: { color: '#1f2937' }},
+                legend: { data: ['عدد المعاملات', 'قيمة المعاملات'], textStyle: { color: '#1f2937' }, right: 10, top: 0 },
+                grid: { top: 40, right: 20, bottom: 20, left: 20, containLabel: true },
+                xAxis: { type: 'category', data: ['١ مايو', '٥ مايو', '١٠ مايو', '١٥ مايو', '٢٠ مايو', '٢٥ مايو', '٢٦ مايو'], axisLine: { lineStyle: { color: '#e2e8f0' }}, axisLabel: { color: '#1f2937' }},
+                yAxis: [
+                    { type: 'value', name: 'عدد المعاملات', axisLine: { show: false }, axisLabel: { color: '#1f2937' }, splitLine: { lineStyle: { color: '#e2e8f0' }}},
+                    { type: 'value', name: 'قيمة المعاملات', axisLine: { show: false }, axisLabel: { color: '#1f2937', formatter: '{value} ر.س' }, splitLine: { show: false }}
+                ],
+                series: [
+                    { name: 'عدد المعاملات', type: 'bar', data: [120, 132, 101, 134, 90, 180, 210], itemStyle: { color: 'rgba(87, 181, 231, 1)', borderRadius: 4 }},
+                    { name: 'قيمة المعاملات', type: 'line', yAxisIndex: 1, data: [12000, 13200, 10100, 13400, 9000, 18000, 21000], smooth: true, symbol: 'none', lineStyle: { color: 'rgba(141, 211, 199, 1)' }, areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(141, 211, 199, 0.3)' },{ offset: 1, color: 'rgba(141, 211, 199, 0.1)' }])}}
+                ]
+            };
+            transactionTrendChart.setOption(transactionTrendOption);
+            window.addEventListener('resize', () => transactionTrendChart.resize());
+        }
+
+        const txPaymentMethodChartEl = document.getElementById('txPaymentMethodChart');
+        if (txPaymentMethodChartEl) {
+            const txPaymentMethodChart = echarts.init(txPaymentMethodChartEl);
+            const txPaymentMethodOption = {
+                animation: false, tooltip: { trigger: 'item', backgroundColor: 'rgba(255, 255, 255, 0.9)', borderColor: '#e2e8f0', textStyle: { color: '#1f2937' }},
+                legend: { orient: 'vertical', right: 10, top: 'center', textStyle: { color: '#1f2937' }},
+                series: [{ name: 'طرق الدفع', type: 'pie', radius: ['40%', '70%'], center: ['40%', '50%'], avoidLabelOverlap: false, itemStyle: { borderRadius: 8, borderColor: '#fff', borderWidth: 2 }, label: { show: false }, emphasis: { label: { show: false }}, labelLine: { show: false }, data: [ { value: 45, name: 'نقدي', itemStyle: { color: 'rgba(87, 181, 231, 1)' } }, { value: 30, name: 'بطاقة ائتمان', itemStyle: { color: 'rgba(141, 211, 199, 1)' } }, { value: 15, name: 'محفظة إلكترونية', itemStyle: { color: 'rgba(251, 191, 114, 1)' } }, { value: 10, name: 'تحويل بنكي', itemStyle: { color: 'rgba(252, 141, 98, 1)' } } ]}]
+            };
+            txPaymentMethodChart.setOption(txPaymentMethodOption);
+            window.addEventListener('resize', () => txPaymentMethodChart.resize());
+        }
+    }
+
+    // --- Dropdown Logic ---
+    function setupDropdown(buttonId, menuId) {
+        const button = document.getElementById(buttonId);
+        const menu = document.getElementById(menuId);
+        if (button && menu) {
+            button.addEventListener('click', function(e) {
+                e.stopPropagation(); // Prevent document click listener from closing it immediately
+                // Close other open dropdowns
+                document.querySelectorAll('.absolute.z-10.bg-white, .calendar.absolute.z-20').forEach(otherMenu => {
+                    if (otherMenu !== menu) {
+                        otherMenu.classList.add('hidden');
+                    }
+                });
+                menu.classList.toggle('hidden');
+            });
+            const items = menu.querySelectorAll('a');
+            items.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const parentButton = menu.previousElementSibling; // Get the button that triggered this dropdown
+                    if (parentButton) {
+                         // Try to set text content more robustly
+                        const textNode = Array.from(parentButton.childNodes).find(node => node.nodeType === Node.TEXT_NODE && node.textContent.trim() !== '');
+                        if (textNode) {
+                            textNode.textContent = item.textContent.trim() + " ";
+                        } else if (parentButton.querySelector('span')) { // If button has a span for text
+                            parentButton.querySelector('span').textContent = item.textContent.trim();
+                        } else { // Fallback to replacing all button text
+                            parentButton.textContent = item.textContent.trim();
+                        }
+                    }
+                    menu.classList.add('hidden');
+                });
+            });
+        }
+    }
+    
+    // Dropdowns in Admin Dashboard
+    setupDropdown('branchDropdown', 'branchDropdownMenu');
+    setupDropdown('representativeDropdown', 'representativeDropdownMenu');
+
+    // Dropdowns in Transactions View
+    setupDropdown('branchDropdownTransactions', 'branchDropdownMenuTransactions');
+    setupDropdown('representativeDropdownTransactions', 'representativeDropdownMenuTransactions');
+    setupDropdown('paymentMethodDropdownTransactions', 'paymentMethodDropdownMenuTransactions');
+    setupDropdown('statusDropdownTransactions', 'statusDropdownMenuTransactions');
+    setupDropdown('exportDropdownBtn', 'exportDropdownMenu');
+    
+    // Date Range Picker (Transactions View)
+    const dateRangeBtnTransactions = document.getElementById('dateRangeBtnTransactions');
+    const dateRangeCalendarTransactions = document.getElementById('dateRangeCalendarTransactions');
+    const closeDateRangeTransactions = document.getElementById('closeDateRangeTransactions');
+
+    if (dateRangeBtnTransactions && dateRangeCalendarTransactions) {
+        dateRangeBtnTransactions.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dateRangeCalendarTransactions.classList.toggle('hidden');
+        });
+        if(closeDateRangeTransactions){
+            closeDateRangeTransactions.addEventListener('click', function() {
+                dateRangeCalendarTransactions.classList.add('hidden');
+            });
+        }
+    }
+    
+    // Global click listener to close dropdowns/calendars
+    document.addEventListener('click', function(e) {
+        document.querySelectorAll('.absolute.z-10.bg-white, .calendar.absolute.z-20').forEach(menu => {
+            // Check if the click is outside the menu AND its corresponding button
+            const buttonId = menu.id.replace('Menu', '').replace('Calendar', 'Btn'); // Attempt to find related button
+            const button = buttonId ? document.getElementById(buttonId) : null;
+            if (!menu.contains(e.target) && (!button || !button.contains(e.target))) {
+                 menu.classList.add('hidden');
+            }
+        });
+    });
+
+    // --- Modal Logic ---
+    function setupModal(openBtnId, modalId, closeBtnId, cancelBtnId) {
+        const openBtn = document.getElementById(openBtnId); 
+        const modal = document.getElementById(modalId);
+        const closeBtn = document.getElementById(closeBtnId);
+        const cancelBtn = cancelBtnId ? document.getElementById(cancelBtnId) : null;
+
+        if (modal && closeBtn) { 
+            if (openBtn) {
+                openBtn.addEventListener('click', function() { modal.classList.remove('hidden'); });
+            }
+            closeBtn.addEventListener('click', function() { modal.classList.add('hidden'); });
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', function() { modal.classList.add('hidden'); });
+            }
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) { 
+                    modal.classList.add('hidden');
+                }
+            });
+        }
+    }
+
+    // Admin Dashboard Modals
+    setupModal('addToBoxBtn', 'addToBoxModal', 'closeAddModal', 'cancelAddBtn');
+    setupModal('withdrawFromBoxBtn', 'withdrawFromBoxModal', 'closeWithdrawModal', 'cancelWithdrawBtn');
+    
+    // Transaction Details Modal elements
+    const transactionDetailsModal = document.getElementById('transactionDetailsModal');
+    const closeTransactionDetailsModal = document.getElementById('closeTransactionDetailsModal');
+    const closeTransactionDetailsModalBtn = document.getElementById('closeTransactionDetailsModalBtn'); // The "إغلاق" button
+    const transactionIdDisplay = document.getElementById('transactionIdDisplay');
+
+    // Elements within Transaction Details Modal to populate
+    const modalCustomerAvatar = document.getElementById('modalCustomerAvatar');
+    const modalCustomerName = document.getElementById('modalCustomerName');
+    const modalCustomerPhone = document.getElementById('modalCustomerPhone');
+    const modalStatusBadge = document.getElementById('modalStatusBadge');
+    const modalDateTime = document.getElementById('modalDateTime');
+    const modalTransactionIdInfo = document.getElementById('modalTransactionIdInfo');
+    const modalAmountInfo = document.getElementById('modalAmountInfo');
+    const modalPaymentMethodIcon = document.getElementById('modalPaymentMethodIcon');
+    const modalPaymentMethodText = document.getElementById('modalPaymentMethodText');
+    const modalBranchInfo = document.getElementById('modalBranchInfo');
+    const modalRepresentativeInfo = document.getElementById('modalRepresentativeInfo');
+    const modalCardNumber = document.getElementById('modalCardNumber');
+    const modalCardHolder = document.getElementById('modalCardHolder');
+    const modalTransactionDate = document.getElementById('modalTransactionDate');
+    const modalTransactionTime = document.getElementById('modalTransactionTime');
+    const modalReferenceNumber = document.getElementById('modalReferenceNumber');
+    const modalProductList = document.getElementById('modalProductList');
+    const modalTotalAmount = document.getElementById('modalTotalAmount');
+    const modalNotes = document.getElementById('modalNotes');
+
+
+    if (transactionDetailsModal && closeTransactionDetailsModal && transactionIdDisplay) {
+        document.body.addEventListener('click', function(event) {
+            const targetButton = event.target.closest('.transaction-details-btn, .admin-view-details-btn');
+
+            if (targetButton) {
+                const transactionId = targetButton.getAttribute('data-id');
+                transactionIdDisplay.textContent = '#' + transactionId;
+
+                if (targetButton.classList.contains('admin-view-details-btn')) {
+                    // Populate with placeholder data for admin view
+                    if(modalCustomerAvatar) modalCustomerAvatar.textContent = 'A'; // Placeholder initial
+                    if(modalCustomerName) modalCustomerName.textContent = 'بيانات العميل (ملخص)';
+                    if(modalCustomerPhone) modalCustomerPhone.textContent = '+966 00 000 0000';
+                    if(modalStatusBadge) {
+                        modalStatusBadge.className = 'status-badge completed'; 
+                        modalStatusBadge.textContent = 'مكتملة';
+                    }
+                    if(modalDateTime) modalDateTime.textContent = new Date().toLocaleDateString('ar-SA') + ', ' + new Date().toLocaleTimeString('ar-SA');
+                    
+                    if(modalTransactionIdInfo) modalTransactionIdInfo.textContent = '#' + transactionId;
+                    if(modalAmountInfo) modalAmountInfo.textContent = '--- ر.س';
+                    if(modalPaymentMethodText) modalPaymentMethodText.textContent = 'غير محدد';
+                    if(modalPaymentMethodIcon) modalPaymentMethodIcon.className = 'ri-question-mark text-gray-400 w-5 h-5'; 
+                    if(modalBranchInfo) modalBranchInfo.textContent = 'غير محدد';
+                    if(modalRepresentativeInfo) modalRepresentativeInfo.textContent = 'غير محدد';
+
+                    if(modalCardNumber) modalCardNumber.textContent = '**** **** **** ****';
+                    if(modalCardHolder) modalCardHolder.textContent = 'بيانات حامل البطاقة (ملخص)';
+                    if(modalTransactionDate) modalTransactionDate.textContent = 'غير محدد';
+                    if(modalTransactionTime) modalTransactionTime.textContent = 'غير محدد';
+                    if(modalReferenceNumber) modalReferenceNumber.textContent = 'غير محدد';
+                    
+                    if(modalProductList) modalProductList.innerHTML = '<tr><td colspan="4" class="text-center py-4">تفاصيل المنتجات غير متوفرة في هذا العرض الموجز.</td></tr>';
+                    if(modalTotalAmount) modalTotalAmount.textContent = '--- ر.س';
+                    if(modalNotes) modalNotes.textContent = 'لا توجد ملاحظات لهذا العرض الموجز.';
+
+                } else if (targetButton.classList.contains('transaction-details-btn')) {
+                    // Logic to populate from actual data source for main transactions table
+                    const row = targetButton.closest('tr');
+                    if (row) {
+                        const customerAvatarEl = row.querySelector('.flex items-center .font-bold');
+                        const customerNameEl = row.querySelector('.text-sm.font-medium.text-gray-900');
+                        const customerPhoneEl = row.querySelector('.text-xs.text-gray-500');
+                        const amountEl = row.cells[3].querySelector('div'); 
+                        const paymentMethodTextEl = row.cells[4].querySelector('span');
+                        const paymentMethodIconEl = row.cells[4].querySelector('i');
+                        const dateEl = row.cells[5].querySelector('div:first-child');
+                        const timeEl = row.cells[5].querySelector('div:last-child');
+                        const branchEl = row.cells[6].querySelector('div');
+                        const representativeEl = row.cells[7].querySelector('div');
+                        const statusBadgeEl = row.querySelector('.status-badge');
+
+                        if(modalCustomerAvatar && customerAvatarEl) modalCustomerAvatar.textContent = customerAvatarEl.textContent;
+                        if(modalCustomerName && customerNameEl) modalCustomerName.textContent = customerNameEl.textContent;
+                        if(modalCustomerPhone && customerPhoneEl) modalCustomerPhone.textContent = customerPhoneEl.textContent;
+                        if(modalStatusBadge && statusBadgeEl) {
+                            modalStatusBadge.className = statusBadgeEl.className;
+                            modalStatusBadge.textContent = statusBadgeEl.textContent;
+                        }
+                        if(modalDateTime && dateEl && timeEl) modalDateTime.textContent = `${dateEl.textContent}, ${timeEl.textContent}`;
+                        
+                        if(modalTransactionIdInfo) modalTransactionIdInfo.textContent = '#' + transactionId;
+                        if(modalAmountInfo && amountEl) modalAmountInfo.textContent = amountEl.textContent;
+                        if(modalPaymentMethodText && paymentMethodTextEl) modalPaymentMethodText.textContent = paymentMethodTextEl.textContent;
+                        if(modalPaymentMethodIcon && paymentMethodIconEl) modalPaymentMethodIcon.className = paymentMethodIconEl.className;
+                        if(modalBranchInfo && branchEl) modalBranchInfo.textContent = branchEl.textContent;
+                        if(modalRepresentativeInfo && representativeEl) modalRepresentativeInfo.textContent = representativeEl.textContent;
+                        
+                        // For simplicity, payment details and product details are placeholders
+                        if(modalCardNumber) modalCardNumber.textContent = '**** **** **** 1234'; 
+                        if(modalCardHolder && customerNameEl) modalCardHolder.textContent = customerNameEl.textContent; 
+                        if(modalTransactionDate && dateEl) modalTransactionDate.textContent = dateEl.textContent;
+                        if(modalTransactionTime && timeEl) modalTransactionTime.textContent = timeEl.textContent;
+                        if(modalReferenceNumber) modalReferenceNumber.textContent = 'REF-' + transactionId.split('-')[1] + transactionId.split('-')[2];
+
+
+                        if(modalProductList) modalProductList.innerHTML = `
+                            <tr><td class="px-6 py-4">منتج افتراضي 1</td><td class="px-6 py-4">1</td><td class="px-6 py-4">500 ر.س</td><td class="px-6 py-4">500 ر.س</td></tr>
+                            <tr><td class="px-6 py-4">منتج افتراضي 2</td><td class="px-6 py-4">2</td><td class="px-6 py-4">250 ر.س</td><td class="px-6 py-4">500 ر.س</td></tr>`;
+                        if(modalTotalAmount && amountEl) modalTotalAmount.textContent = amountEl.textContent;
+                        if(modalNotes) modalNotes.textContent = 'ملاحظات لهذه المعاملة.';
+                    }
+                }
+                transactionDetailsModal.classList.remove('hidden');
+            }
+
+            const closeBtn = event.target.closest('#closeTransactionDetailsModal, #closeTransactionDetailsModalBtn');
+            if (closeBtn) {
+                 transactionDetailsModal.classList.add('hidden');
+            }
+        });
+
+        transactionDetailsModal.addEventListener('click', function(e) {
+            if (e.target === transactionDetailsModal) {
+                transactionDetailsModal.classList.add('hidden');
+            }
+        });
+    }
+    
+    // Transaction Actions Menu (three-dot menu in table)
+    document.body.addEventListener('click', function(e) {
+        const targetActionsBtn = e.target.closest('.transaction-actions-btn');
+        if (targetActionsBtn) {
+            e.stopPropagation();
+            const menu = targetActionsBtn.nextElementSibling;
+            document.querySelectorAll('.transaction-actions-menu').forEach(m => {
+                if (m !== menu) m.classList.add('hidden');
+            });
+            if (menu) menu.classList.toggle('hidden');
+        } else {
+            if (!e.target.closest('.transaction-actions-menu')) {
+                document.querySelectorAll('.transaction-actions-menu').forEach(m => m.classList.add('hidden'));
+            }
+        }
+    });
+
+    setupModal('addTransactionBtn', 'addTransactionModal', 'closeAddTransactionModal', 'cancelAddTransactionBtn');
+    setupModal('exportBtn', 'exportReportModal', 'closeExportReportModal', 'cancelExportBtn');
+    
+    const reportDateRangeSelect = document.getElementById('reportDateRange');
+    const customDateRangeDiv = document.getElementById('customDateRange');
+    if(reportDateRangeSelect && customDateRangeDiv){
+        reportDateRangeSelect.addEventListener('change', function() {
+            customDateRangeDiv.classList.toggle('hidden', this.value !== 'custom');
+        });
+    }
+
+    // --- Checkboxes Logic (Transactions Table) ---
+    const selectAllCheckboxTransactions = document.getElementById('selectAllCheckboxTransactions');
+    const transactionCheckboxes = document.querySelectorAll('.transaction-checkbox');
+    if (selectAllCheckboxTransactions && transactionCheckboxes.length > 0) {
+        selectAllCheckboxTransactions.addEventListener('click', function() {
+            this.classList.toggle('checked');
+            const isChecked = this.classList.contains('checked');
+            transactionCheckboxes.forEach(checkbox => {
+                if (isChecked) checkbox.classList.add('checked');
+                else checkbox.classList.remove('checked');
+            });
+        });
+        transactionCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('click', function() {
+                this.classList.toggle('checked');
+                const allChecked = Array.from(transactionCheckboxes).every(cb => cb.classList.contains('checked'));
+                if (allChecked) selectAllCheckboxTransactions.classList.add('checked');
+                else selectAllCheckboxTransactions.classList.remove('checked');
+            });
+        });
+    }
+
+    // --- Add Product Row Logic (Add Transaction Modal) ---
+    const addProductBtn = document.getElementById('addProductBtn');
+    const productListTbody = document.getElementById('productList'); 
+
+    if (addProductBtn && productListTbody) {
+        addProductBtn.addEventListener('click', function() {
+            const newRow = productListTbody.insertRow(); 
+            newRow.innerHTML = `
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="relative">
+                        <select class="product-select bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none pr-8" required>
+                            <option value="" disabled selected>اختر المنتج</option>
+                            <option value="package1">باقة الخدمات المتكاملة</option>
+                            <option value="service1">خدمة إضافية</option>
+                            <option value="product1">منتج 1</option>
+                            <option value="product2">منتج 2</option>
+                        </select>
+                    </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <input type="number" class="product-quantity bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none" value="1" min="1">
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="relative">
+                        <input type="number" class="product-price bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:ring-2 focus:ring-primary/20 focus:outline-none" placeholder="السعر">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <span class="text-gray-500">ر.س</span>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="product-total text-sm text-gray-900">٠ ر.س</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-center">
+                    <button type="button" class="remove-product text-red-600 hover:text-red-800">
+                        <div class="w-5 h-5 flex items-center justify-center">
+                            <i class="ri-delete-bin-line"></i>
+                        </div>
+                    </button>
+                </td>
+            `;
+            setupProductRowEvents(newRow);
+            updateGrandTotal();
+        });
+
+        function setupProductRowEvents(row) {
+            const quantityInput = row.querySelector('.product-quantity');
+            const priceInput = row.querySelector('.product-price');
+            const totalElement = row.querySelector('.product-total');
+            const removeButton = row.querySelector('.remove-product');
+            
+            function updateTotalForRow() {
+                const quantity = parseInt(quantityInput.value) || 0;
+                const price = parseFloat(priceInput.value) || 0;
+                const total = quantity * price;
+                totalElement.textContent = total.toLocaleString('ar-SA', { style: 'currency', currency: 'SAR' }).replace('SAR', 'ر.س');
+                updateGrandTotal();
+            }
+            
+            quantityInput.addEventListener('input', updateTotalForRow);
+            priceInput.addEventListener('input', updateTotalForRow);
+            
+            removeButton.addEventListener('click', function() {
+                row.remove();
+                updateGrandTotal();
+            });
+            updateTotalForRow(); 
+        }
+        
+        function updateGrandTotal() {
+            const totalAmountDisplay = document.getElementById('totalAmount');
+            if (!totalAmountDisplay) return;
+
+            let grandTotal = 0;
+            productListTbody.querySelectorAll('tr').forEach(row => { 
+                const totalElement = row.querySelector('.product-total');
+                if (totalElement) {
+                    const text = totalElement.textContent;
+                    const value = parseFloat(text.replace(/[^0-9.,]/g, '').replace(',', '.')) || 0;
+                    grandTotal += value;
+                }
+            });
+            totalAmountDisplay.textContent = grandTotal.toLocaleString('ar-SA', { style: 'currency', currency: 'SAR' }).replace('SAR', 'ر.س');
+        }
+
+        productListTbody.querySelectorAll('tr').forEach(row => {
+            setupProductRowEvents(row);
+        });
+        updateGrandTotal();
+    }
+
+    // Initial View Setup
+    if (adminDashboardContent && transactionsContent && navDashboard && navTransactions) {
+      showAdminDashboard(); 
+    } else {
+        console.error("Essential elements for view switching are missing.");
+    }
+});
+</script>
+</body>
+</html>
